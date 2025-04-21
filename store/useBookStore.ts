@@ -1,5 +1,6 @@
 // store/useBookStore.ts
 import { create } from 'zustand';
+import { getToken } from '@/services/auth'; // on va le créer juste après
 
 type Book = {
   id: number;
@@ -21,9 +22,18 @@ export const useBookStore = create<BookStore>((set) => ({
 
   fetchBooks: async () => {
     set({ loading: true, error: null });
+
     try {
-      const res = await fetch('https://localhost:8000/api/books'); // 🔁 adapte l’URL à ton back
-      if (!res.ok) throw new Error('Erreur réseau');
+      const token = await getToken(); // ⬅️ Récupère le token stocké
+      if (!token) throw new Error('Aucun token trouvé');
+
+      const res = await fetch('https://localhost:8000/api/books', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error(`Erreur ${res.status}`);
       const data = await res.json();
       set({ books: data });
     } catch (e: any) {

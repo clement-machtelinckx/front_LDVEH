@@ -1,41 +1,20 @@
+// screens/HomeScreen.tsx
 import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, Button } from 'react-native';
+import { useRouter } from 'expo-router';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
+  const router = useRouter();
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Bienvenue dans le Livre Dont Vous Êtes Le Héros 📖</Text>
-      <Text style={styles.subtitle}>Commencez votre aventure en vous connectant !</Text>
+    <View>
+      <Text>Bienvenue dans le Livre Dont Vous Êtes Le Héros 📖</Text>
+      <Text>Commencez votre aventure en vous connectant !</Text>
 
-      <View style={styles.buttonContainer}>
-        <Button title="Connexion" onPress={() => navigation.navigate('Login')} />
-        <Button title="Inscription" onPress={() => navigation.navigate('Register')} />
-      </View>
+      <Button title="Connexion" onPress={() => router.push('/login')} />
+      <Button title="Inscription" onPress={() => router.push('/register')} />
     </View>
   );
 };
 
 export default HomeScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    marginBottom: 32,
-    textAlign: 'center',
-  },
-  buttonContainer: {
-    gap: 12,
-  },
-});
