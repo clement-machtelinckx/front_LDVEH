@@ -1,4 +1,3 @@
-// screens/BookScreen.tsx
 import React, { useEffect } from 'react';
 import {
   View,
@@ -38,6 +37,11 @@ const BookScreen = () => {
           <Pressable style={styles.card} onPress={() => handleBookPress(item.id)}>
             <Text style={styles.bookTitle}>{item.title}</Text>
             <Text style={styles.bookDesc}>{item.description}</Text>
+
+            <View style={styles.metaInfo}>
+              <Text style={styles.meta}>📄 {item.page?.length ?? 0} pages</Text>
+              <Text style={styles.meta}>✍️ {item.author ?? 'Auteur inconnu'}</Text>
+            </View>
           </Pressable>
         )}
       />
@@ -47,7 +51,12 @@ const BookScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
   list: { gap: 16 },
   card: {
     padding: 16,
@@ -57,6 +66,15 @@ const styles = StyleSheet.create({
   },
   bookTitle: { fontSize: 18, fontWeight: '600' },
   bookDesc: { fontSize: 14, color: '#555', marginTop: 6 },
+  metaInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  meta: {
+    fontSize: 12,
+    color: '#777',
+  },
 });
 
 export default BookScreen;
