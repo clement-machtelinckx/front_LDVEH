@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { useAuth } from '@/store/useAuth';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -12,23 +13,30 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const initAuth = useAuth((state) => state.init);
+  const authReady = useAuth((state) => state.authReady);
   const colorScheme = useColorScheme();
+
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
   useEffect(() => {
-    if (loaded) {
+    initAuth();
+  }, []);
+
+  useEffect(() => {
+    if (loaded && authReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, authReady]);
 
-  if (!loaded) {
+  if (!loaded || !authReady) {
     return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
@@ -37,3 +45,4 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
+
