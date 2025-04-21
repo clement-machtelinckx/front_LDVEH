@@ -1,6 +1,7 @@
 // store/useBookStore.ts
 import { create } from 'zustand';
 import { getToken } from '@/services/auth';
+import { useAuth } from '@/store/useAuth';
 
 type Book = {
   id: number;
@@ -24,25 +25,28 @@ export const useBookStore = create<BookStore>((set) => ({
 
   fetchBooks: async () => {
     set({ loading: true, error: null });
-
+  
     try {
-      const token = await getToken();
+      const token = useAuth.getState().token; // 🔥 accès direct au token Zustand
+  
       if (!token) throw new Error('Aucun token trouvé');
-
+  
       const res = await fetch('https://localhost:8000/api/books', {
         headers: {
           Authorization: `Bearer ${token}`,
-      }});
-
+          Accept: 'application/ld+json',
+        },
+      });
+  
       if (!res.ok) throw new Error(`Erreur ${res.status}`);
-
+  
       const data = await res.json();
-
-      set({ books: data.member }); // ✅ le vrai tableau est dans "member"
+      set({ books: data.member });
     } catch (e: any) {
       set({ error: e.message });
     } finally {
       set({ loading: false });
     }
-  },
+  }
+  
 }));

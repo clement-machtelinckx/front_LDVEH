@@ -1,40 +1,29 @@
-// app/login.tsx
 import { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../store/useAuth';
-import { saveToken } from '@/services/auth';
-
+import { useAuth } from '@/store/useAuth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setToken } = useAuth();
+  const { login, isLoading, error } = useAuth();
   const router = useRouter();
 
   const handleLogin = async () => {
-    try {
-      const res = await fetch('https://localhost:8000/api/login', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json', // force
-          },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        Alert.alert('Erreur', 'Identifiants invalides');
-        return;
-      }
-
-      const data = await res.json();
-      setToken(data.token); // ← stocke le JWT dans Zustand
-      saveToken(data.token);
-      router.replace('/book'); // redirige vers la suite
-    } catch (error) {
-      console.error('Login error:', error);
-      Alert.alert('Erreur', 'Une erreur est survenue.');
+    const success = await login(email, password);
+    if (success) {
+      router.replace('/book'); // ✅ à jour avec la bonne route
+    } else {
+      Alert.alert('Erreur', error || 'Échec de la connexion');
     }
   };
 
@@ -59,12 +48,17 @@ export default function Login() {
         onChangeText={setPassword}
       />
 
-      <Button title="Se connecter" onPress={handleLogin} />
-        <TouchableOpacity onPress={() => router.push('/register')}>
-            <Text style={{ color: '#007AFF', textAlign: 'center', marginTop: 12 }}>
-                Pas encore de compte ? Inscris-toi
-            </Text>
-        </TouchableOpacity>
+      {isLoading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <Button title="Se connecter" onPress={handleLogin} />
+      )}
+
+      <TouchableOpacity onPress={() => router.push('/register')}>
+        <Text style={styles.link}>
+          Pas encore de compte ? Inscris-toi
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -88,5 +82,10 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 12,
     borderRadius: 8,
+  },
+  link: {
+    color: '#007AFF',
+    textAlign: 'center',
+    marginTop: 12,
   },
 });
