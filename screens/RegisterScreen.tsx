@@ -1,37 +1,29 @@
-// screens/RegisterScreen.tsx
 import { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import { useRouter } from 'expo-router';
-import { saveToken } from '@/services/auth';
 import { useAuth } from '@/store/useAuth';
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
-  const { setToken } = useAuth();
+  const { register, isLoading, error } = useAuth();
 
   const handleRegister = async () => {
-    try {
-      const res = await fetch('https://localhost:8000/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/ld+jsojson' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        Alert.alert('Erreur', 'Impossible de créer le compte.');
-        return;
-      }
-
-      const data = await res.json();
-      //doublon ici a check
-      saveToken(data.token);
-      setToken(data.token);
-      router.replace('/login'); // ou '/login' si tu préfères une étape en plus
-    } catch (error) {
-      console.error('Register error:', error);
-      Alert.alert('Erreur', 'Une erreur est survenue.');
+    const success = await register(email, password);
+    if (success) {
+      router.replace('/login'); // ✅ ou '/login' si tu préfères étape intermédiaire
+    } else {
+      Alert.alert('Erreur', error || 'Impossible de créer un compte');
     }
   };
 
@@ -56,7 +48,15 @@ export default function RegisterScreen() {
         onChangeText={setPassword}
       />
 
-      <Button title="Créer un compte" onPress={handleRegister} />
+      {isLoading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <Button title="Créer un compte" onPress={handleRegister} />
+      )}
+
+      <TouchableOpacity onPress={() => router.push('/login')}>
+        <Text style={styles.link}>Déjà un compte ? Connecte-toi</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -80,5 +80,10 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 12,
     borderRadius: 8,
+  },
+  link: {
+    color: '#007AFF',
+    textAlign: 'center',
+    marginTop: 12,
   },
 });
