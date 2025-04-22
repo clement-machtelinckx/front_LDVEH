@@ -19,8 +19,7 @@ const BookScreen = () => {
   }, []);
 
   const handleBookPress = (bookId: number) => {
-    console.log('Book selected:', bookId);
-    // router.push(`/chapter/${bookId}`); // à activer plus tard
+    router.push(`/startadventure?bookId=${bookId}`);
   };
 
   if (loading) return <ActivityIndicator style={{ flex: 1 }} size="large" />;
