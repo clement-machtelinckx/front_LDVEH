@@ -24,6 +24,7 @@ type CombatStatus = 'idle' | 'inProgress' | 'won' | 'lost';
 type CombatStore = {
   status: CombatStatus;
   result: FightResult | null;
+  currentFoughtPageId: number | null; // ✅ bien inclus ici
   fight: (monsterId: number) => Promise<void>;
   reset: () => void;
 };
@@ -31,14 +32,14 @@ type CombatStore = {
 export const useCombatStore = create<CombatStore>((set) => ({
   status: 'idle',
   result: null,
+  currentFoughtPageId: null,
 
   fight: async (monsterId) => {
-    const { adventurerId } = useAdventureStore.getState();
+    const { adventurerId, currentPage } = useAdventureStore.getState();
     const token = useAuth.getState().token;
+    if (!adventurerId || !currentPage || !token) return;
 
-    if (!adventurerId || !token) return;
-
-    set({ status: 'inProgress' });
+    set({ status: 'inProgress', result: null });
 
     try {
       const res = await fetch('https://localhost:8000/fight', {
@@ -47,28 +48,29 @@ export const useCombatStore = create<CombatStore>((set) => ({
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ adventurerId, monsterId }),
+        body: JSON.stringify({
+          adventurerId,
+          monsterId,
+        }),
       });
 
-      const data: FightResult = await res.json();
+      const data = await res.json();
 
+      const status: CombatStatus = data.winner === 'adventurer' ? 'won' : 'lost';
       set({
+        status,
         result: data,
-        status: data.winner === 'adventurer' ? 'won' : 'lost',
+        currentFoughtPageId: currentPage.pageId,
       });
-
-      // Si on a gagné → relancer le fetch de la page (pour isBlocking à jour)
-      if (data.winner === 'adventurer') {
-        const current = useAdventureStore.getState().currentPage;
-        if (current) {
-          await useAdventureStore.getState().goToPage(current.pageId);
-        }
-      }
-
     } catch (err) {
-      set({ status: 'idle' });
+      set({ status: 'idle', result: null, currentFoughtPageId: null });
     }
   },
 
-  reset: () => set({ status: 'idle', result: null }),
+  reset: () =>
+    set({
+      status: 'idle',
+      result: null,
+      currentFoughtPageId: null,
+    }),
 }));
