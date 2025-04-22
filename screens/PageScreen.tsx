@@ -1,18 +1,40 @@
 import { useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAdventureStore } from '@/store/useAdventureStore';
+import { useCombatStore } from '@/store/useCombatStore';
 
 export default function PageScreen() {
   const { pageId } = useLocalSearchParams();
   const router = useRouter();
   const { currentPage, goToPage } = useAdventureStore();
 
+  const {
+    status,
+    result,
+    fight,
+    reset,
+  } = useCombatStore();
+
   useEffect(() => {
     if (pageId) {
       goToPage(Number(pageId));
+      reset(); // reset combat state à chaque nouvelle page
     }
   }, [pageId]);
+
+  const handleStartFight = () => {
+    if (currentPage?.monsterId) {
+      fight(currentPage.monsterId);
+    }
+  };
 
   if (!currentPage) return <Text>Chargement de la page...</Text>;
 
@@ -21,14 +43,38 @@ export default function PageScreen() {
       <Text style={styles.pageNumber}>Page {currentPage.pageNumber}</Text>
       <Text style={styles.content}>{currentPage.content}</Text>
 
+      {currentPage.monsterId && (
+        <View style={styles.combatBlock}>
+          <Text style={styles.blocking}>
+            ⚔️ Monstre : {currentPage.monster} ({currentPage.isBlocking ? 'bloquant' : 'non bloquant'})
+          </Text>
+
+          {status === 'idle' && (
+            <Button title="Combattre ce monstre" onPress={handleStartFight} />
+          )}
+
+          {status === 'inProgress' && (
+            <ActivityIndicator size="large" />
+          )}
+
+          {status !== 'idle' && result && (
+            <View style={styles.resultBox}>
+              <Text style={styles.resultText}>{result.log}</Text>
+              {status === 'won' && <Text style={{ color: 'green' }}>✅ Victoire ! Tu peux avancer.</Text>}
+              {status === 'lost' && <Text style={{ color: 'red' }}>💀 Défaite... (retour au début à implémenter)</Text>}
+            </View>
+          )}
+        </View>
+      )}
+
       <View style={styles.choices}>
         {currentPage.choices.map((choice, index) => (
           <Button
             key={index}
             title={choice.text}
             onPress={() => {
+              if (currentPage.isBlocking && status !== 'won') return;
               goToPage(choice.nextPage, currentPage.pageId);
-            //   router.push(`/page/${choice.nextPage}`);
             }}
           />
         ))}
@@ -42,4 +88,29 @@ const styles = StyleSheet.create({
   pageNumber: { fontSize: 20, fontWeight: 'bold' },
   content: { fontSize: 16 },
   choices: { gap: 12 },
+  combatBlock: {
+    marginTop: 24,
+    marginBottom: 16,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: '#fef5f5',
+    borderColor: '#ff9999',
+    borderWidth: 1,
+  },
+  blocking: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  resultBox: {
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: '#eee',
+    borderRadius: 8,
+  },
+  resultText: {
+    fontFamily: 'monospace',
+    fontSize: 14,
+    color: '#333',
+  },
 });
