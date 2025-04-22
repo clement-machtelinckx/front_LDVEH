@@ -19,16 +19,22 @@ export default function PageScreen() {
   const {
     status,
     result,
+    currentFoughtPageId,
     fight,
     reset,
   } = useCombatStore();
+  
 
   useEffect(() => {
     if (pageId) {
       goToPage(Number(pageId));
-      reset(); // reset combat state à chaque nouvelle page
     }
   }, [pageId]);
+
+  useEffect(() => {
+    reset(); // reset à chaque page réelle chargée
+  }, [currentPage?.pageId]);
+  
 
   const handleStartFight = () => {
     if (currentPage?.monsterId) {
@@ -57,13 +63,14 @@ export default function PageScreen() {
             <ActivityIndicator size="large" />
           )}
 
-          {status !== 'idle' && result && (
-            <View style={styles.resultBox}>
-              <Text style={styles.resultText}>{result.log}</Text>
-              {status === 'won' && <Text style={{ color: 'green' }}>✅ Victoire ! Tu peux avancer.</Text>}
-              {status === 'lost' && <Text style={{ color: 'red' }}>💀 Défaite... (retour au début à implémenter)</Text>}
-            </View>
-          )}
+        {status !== 'idle' && result && currentFoughtPageId === currentPage.pageId && (
+          <View style={styles.resultBox}>
+            <Text style={styles.resultText}>{result.log}</Text>
+            {status === 'won' && <Text style={{ color: 'green' }}>✅ Victoire ! Tu peux avancer.</Text>}
+            {status === 'lost' && <Text style={{ color: 'red' }}>💀 Défaite... (retour au début à implémenter)</Text>}
+          </View>
+        )}
+
         </View>
       )}
 
