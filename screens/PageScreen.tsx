@@ -10,6 +10,8 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAdventureStore } from '@/store/useAdventureStore';
 import { useCombatStore } from '@/store/useCombatStore';
+import EndingModal from '@/components/EndingModal';
+
 
 export default function PageScreen() {
   const { pageId } = useLocalSearchParams();
@@ -45,49 +47,53 @@ export default function PageScreen() {
   if (!currentPage) return <Text>Chargement de la page...</Text>;
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.pageNumber}>Page {currentPage.pageNumber}</Text>
-      <Text style={styles.content}>{currentPage.content}</Text>
-
-      {currentPage.monsterId && (
-        <View style={styles.combatBlock}>
-          <Text style={styles.blocking}>
-            ⚔️ Monstre : {currentPage.monster} ({currentPage.isBlocking ? 'bloquant' : 'non bloquant'})
-          </Text>
-
-          {status === 'idle' && (
-            <Button title="Combattre ce monstre" onPress={handleStartFight} />
-          )}
-
-          {status === 'inProgress' && (
-            <ActivityIndicator size="large" />
-          )}
-
-        {status !== 'idle' && result && currentFoughtPageId === currentPage.pageId && (
-          <View style={styles.resultBox}>
-            <Text style={styles.resultText}>{result.log}</Text>
-            {status === 'won' && <Text style={{ color: 'green' }}>✅ Victoire ! Tu peux avancer.</Text>}
-            {status === 'lost' && <Text style={{ color: 'red' }}>💀 Défaite... (retour au début à implémenter)</Text>}
+    <>
+      <EndingModal visible={!!currentPage?.endingType} type={currentPage?.endingType || null} />
+  
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.pageNumber}>Page {currentPage.pageNumber}</Text>
+        <Text style={styles.content}>{currentPage.content}</Text>
+  
+        {currentPage.monsterId && (
+          <View style={styles.combatBlock}>
+            <Text style={styles.blocking}>
+              ⚔️ Monstre : {currentPage.monster} ({currentPage.isBlocking ? 'bloquant' : 'non bloquant'})
+            </Text>
+  
+            {status === 'idle' && (
+              <Button title="Combattre ce monstre" onPress={handleStartFight} />
+            )}
+  
+            {status === 'inProgress' && (
+              <ActivityIndicator size="large" />
+            )}
+  
+            {status !== 'idle' && result && currentFoughtPageId === currentPage.pageId && (
+              <View style={styles.resultBox}>
+                <Text style={styles.resultText}>{result.log}</Text>
+                {status === 'won' && <Text style={{ color: 'green' }}>✅ Victoire ! Tu peux avancer.</Text>}
+                {status === 'lost' && <Text style={{ color: 'red' }}>💀 Défaite... (retour au début à implémenter)</Text>}
+              </View>
+            )}
           </View>
         )}
-
+  
+        <View style={styles.choices}>
+          {currentPage.choices.map((choice, index) => (
+            <Button
+              key={index}
+              title={choice.text}
+              onPress={() => {
+                if (currentPage.isBlocking && status !== 'won') return;
+                goToPage(choice.nextPage, currentPage.pageId);
+              }}
+            />
+          ))}
         </View>
-      )}
-
-      <View style={styles.choices}>
-        {currentPage.choices.map((choice, index) => (
-          <Button
-            key={index}
-            title={choice.text}
-            onPress={() => {
-              if (currentPage.isBlocking && status !== 'won') return;
-              goToPage(choice.nextPage, currentPage.pageId);
-            }}
-          />
-        ))}
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
+  
 }
 
 const styles = StyleSheet.create({
