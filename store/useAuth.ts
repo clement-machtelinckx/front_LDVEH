@@ -9,7 +9,6 @@ interface AuthState {
   authReady: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, password: string) => Promise<boolean>;
-  
   logout: () => Promise<void>;
   init: () => Promise<void>;
 }
@@ -20,10 +19,11 @@ export const useAuth = create<AuthState>((set) => ({
   error: null,
   authReady: false,
 
-  // Initialisation : appelé au démarrage de l'app
   init: async () => {
     const storedToken = await AsyncStorage.getItem('token');
-    if (storedToken) set({ token: storedToken });
+    if (storedToken) {
+      set({ token: storedToken });
+    }
     set({ authReady: true });
   },
 
@@ -59,16 +59,8 @@ export const useAuth = create<AuthState>((set) => ({
 
       if (!res.ok) throw new Error('Erreur lors de l’inscription');
 
-      const data = await res.json();
-
-      // On suppose que le backend renvoie directement le token après inscription
-      if (data.token) {
-        await AsyncStorage.setItem('token', data.token);
-        set({ token: data.token, isLoading: false });
-        return true;
-      }
-
-      return false;
+      set({ isLoading: false });
+      return true;
     } catch (e: any) {
       set({ error: e.message, isLoading: false });
       return false;
