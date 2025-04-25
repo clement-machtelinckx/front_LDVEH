@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useAuth } from '@/store/useAuth';
+import HeaderMenu from '@/components/HeaderMenu';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -37,6 +38,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DefaultTheme}>
+          <HeaderMenu />
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />

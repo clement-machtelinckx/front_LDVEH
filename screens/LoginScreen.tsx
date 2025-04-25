@@ -15,7 +15,8 @@ import { useAuth } from '@/store/useAuth';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isLoading, error } = useAuth();
+  const { login, error } = useAuth();
+  const isLoading = useAuth((s) => s.isLoading);
   const router = useRouter();
 
   const handleLogin = async () => {

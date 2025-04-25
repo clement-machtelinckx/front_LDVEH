@@ -16,7 +16,8 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
-  const { register, isLoading, error } = useAuth();
+  const { register, error } = useAuth();
+  const isLoading = useAuth((s) => s.isLoading);
 
   const handleRegister = async () => {
     const success = await register(email, password);
