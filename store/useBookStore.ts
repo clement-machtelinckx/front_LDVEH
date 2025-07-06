@@ -1,5 +1,6 @@
 // store/useBookStore.ts
 import { create } from 'zustand';
+import { API_URL } from '@/constants/api';
 import { getToken } from '@/services/auth';
 import { useAuth } from '@/store/useAuth';
 
@@ -31,7 +32,7 @@ export const useBookStore = create<BookStore>((set) => ({
   
       if (!token) throw new Error('Aucun token trouvé');
   
-      const res = await fetch('https://localhost:8000/api/books', {
+      const res = await fetch(`${API_URL}/books`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/ld+json',

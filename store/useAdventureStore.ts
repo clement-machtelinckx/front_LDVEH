@@ -1,5 +1,7 @@
 // store/useAdventureStore.ts
 import { create } from 'zustand';
+import { API_URL, BASE_URL } from '@/constants/api';
+
 import { useAuth } from './useAuth';
 
 type Choice = {
@@ -31,7 +33,7 @@ export const useAdventureStore = create<AdventureState>((set) => ({
 
   startAdventure: async (bookId, adventurerName) => {
     const token = useAuth.getState().token;
-    const res = await fetch('https://localhost:8000/api/adventure/start', {
+    const res = await fetch(`${API_URL}/adventure/start`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -55,8 +57,8 @@ export const useAdventureStore = create<AdventureState>((set) => ({
     if (!adventurerId || !token) return;
   
     const url = fromPageId
-      ? `https://127.0.0.1:8000/page/${pageId}/adventurer/${adventurerId}/from/${fromPageId}`
-      : `https://127.0.0.1:8000/page/${pageId}/adventurer/${adventurerId}`;
+      ? `${BASE_URL}/page/${pageId}/adventurer/${adventurerId}/from/${fromPageId}`
+      : `${BASE_URL}/page/${pageId}/adventurer/${adventurerId}`;
   
     const res = await fetch(url, {
       headers: {

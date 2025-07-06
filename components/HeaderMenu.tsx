@@ -1,5 +1,5 @@
 // components/HeaderMenu.tsx
-import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Image, SafeAreaView  } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/store/useAuth';
 
@@ -13,19 +13,22 @@ export default function HeaderMenu() {
   };
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require('@/assets/images/logo_serpent.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
-      <MenuButton label="🏠 Accueil" onPress={() => router.push('/')} />
-      <MenuButton label="📚 Livres" onPress={() => router.push('/book')} />
-      <MenuButton label="🧙 Aventuriers" onPress={() => router.push('/adventurers')} />
-      <MenuButton label="🚪 Déconnexion" onPress={handleLogout} danger />
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Image
+          source={require('@/assets/images/logo_serpent.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <MenuButton label="🏠 Accueil" onPress={() => router.push('/')} />
+        <MenuButton label="📚 Livres" onPress={() => router.push('/book')} />
+        <MenuButton label="🧙 Aventuriers" onPress={() => router.push('/adventurers')} />
+        <MenuButton label="🚪 Déconnexion" onPress={handleLogout} danger />
+      </View>
+    </SafeAreaView>
   );
 }
+
 
 function MenuButton({ label, onPress, danger = false }: { label: string; onPress: () => void; danger?: boolean }) {
   return (
@@ -43,15 +46,20 @@ function MenuButton({ label, onPress, danger = false }: { label: string; onPress
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingVertical: 10,
-    backgroundColor: '#f9f9f9',
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
-  },
+    safeArea: {
+      backgroundColor: '#f9f9f9',
+    },
+    container: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      paddingVertical: 10,
+      backgroundColor: '#f9f9f9',
+      borderBottomWidth: 1,
+      borderColor: '#ddd',
+      marginTop: 40,
+    },
+
   logo: {
     width: 50,
     height: 50,

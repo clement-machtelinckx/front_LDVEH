@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   pageNumber: { fontSize: 20, fontWeight: 'bold' },
 content: {
   fontSize: 16,
-  textAlign: 'center', // ou 'justify' si tu veux tester
+  textAlign: 'center',
   backgroundColor: '#f9f9f9', // blanc cassé
   borderColor: '#ddd',        // bordure douce
   borderWidth: 1,
