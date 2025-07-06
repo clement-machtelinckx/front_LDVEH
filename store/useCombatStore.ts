@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { BASE_URL } from '@/constants/api';
 import { useAdventureStore } from './useAdventureStore';
 import { useAuth } from './useAuth';
 
@@ -42,7 +43,7 @@ export const useCombatStore = create<CombatStore>((set) => ({
     set({ status: 'inProgress', result: null });
 
     try {
-      const res = await fetch('https://localhost:8000/fight', {
+      const res = await fetch(`${BASE_URL}/fight`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

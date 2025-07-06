@@ -59,6 +59,8 @@ const styles = StyleSheet.create({
   list: { gap: 16 },
   card: {
     padding: 16,
+    borderColor: 'black',
+    borderWidth: 1,
     borderRadius: 12,
     backgroundColor: '#f3f3f3',
     elevation: 2,

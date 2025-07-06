@@ -1,5 +1,6 @@
 // store/useAdventurerStore.ts
 import { create } from 'zustand';
+import { API_URL } from '@/constants/api';
 import { useAuth } from './useAuth';
 
 type Adventure = {
@@ -40,7 +41,7 @@ export const useAdventurerStore = create<AdventurerStore>((set) => ({
     set({ loading: true, error: null });
 
     try {
-      const res = await fetch('https://localhost:8000/api/my-adventurers', {
+      const res = await fetch(`${API_URL}/my-adventurers`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
