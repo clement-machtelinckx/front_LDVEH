@@ -34,7 +34,7 @@ export default function PageScreen() {
   }, [pageId]);
 
   useEffect(() => {
-    reset(); // reset à chaque page réelle chargée
+    reset();
   }, [currentPage?.pageId]);
   
 
@@ -99,8 +99,23 @@ export default function PageScreen() {
 const styles = StyleSheet.create({
   container: { padding: 24, gap: 16 },
   pageNumber: { fontSize: 20, fontWeight: 'bold' },
-  content: { fontSize: 16 },
-  choices: { gap: 12 },
+content: {
+  fontSize: 16,
+  textAlign: 'center', // ou 'justify' si tu veux tester
+  backgroundColor: '#f9f9f9', // blanc cassé
+  borderColor: '#ddd',        // bordure douce
+  borderWidth: 1,
+  borderRadius: 8,
+  padding: 16,
+},
+  choices: { 
+    gap: 12,
+    borderRadius: 8,
+    padding: 12,
+    borderColor: '#ddd',
+    borderWidth: 1,  
+    backgroundColor: '#f9f9f9',
+  },
   combatBlock: {
     marginTop: 24,
     marginBottom: 16,

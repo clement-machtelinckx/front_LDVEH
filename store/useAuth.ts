@@ -1,5 +1,6 @@
 // store/useAuth.ts
 import { create } from 'zustand';
+import { API_URL } from '@/constants/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthState {
@@ -30,7 +31,7 @@ export const useAuth = create<AuthState>((set) => ({
   login: async (email, password) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await fetch('https://localhost:8000/api/login', {
+      const res = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -51,7 +52,7 @@ export const useAuth = create<AuthState>((set) => ({
   register: async (email, password) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await fetch('https://localhost:8000/api/register', {
+      const res = await fetch(`${API_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
