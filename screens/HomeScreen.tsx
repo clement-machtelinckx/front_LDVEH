@@ -1,7 +1,7 @@
-// screens/HomeScreen.tsx
 import React from 'react';
-import { View, Text, Button, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import PrimaryButton from '@/components/common/PrimaryButton';
 
 const HomeScreen = () => {
   const router = useRouter();
@@ -14,8 +14,8 @@ const HomeScreen = () => {
         resizeMode="contain"
       />
 
-      <Button title="Connexion" onPress={() => router.push('/login')} />
-      <Button title="Inscription" onPress={() => router.push('/register')} />
+      <PrimaryButton title="Connexion" onPress={() => router.push('/login')} />
+      <PrimaryButton title="Inscription" onPress={() => router.push('/register')} />
     </View>
   );
 };

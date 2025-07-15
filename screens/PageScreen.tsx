@@ -11,6 +11,10 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAdventureStore } from '@/store/useAdventureStore';
 import { useCombatStore } from '@/store/useCombatStore';
 import EndingModal from '@/components/EndingModal';
+import TextCard from '@/components/common/TextCard';
+import PrimaryButton from '@/components/common/PrimaryButton';
+import MonsterFightBlock from '@/components/metier/MonsterFightBlock';
+
 
 
 export default function PageScreen() {
@@ -50,47 +54,37 @@ export default function PageScreen() {
     <>
       <EndingModal visible={!!currentPage?.endingType} type={currentPage?.endingType || null} />
   
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.pageNumber}>Page {currentPage.pageNumber}</Text>
-        <Text style={styles.content}>{currentPage.content}</Text>
-  
-        {currentPage.monsterId && (
-          <View style={styles.combatBlock}>
-            <Text style={styles.blocking}>
-              ⚔️ Monstre : {currentPage.monster} ({currentPage.isBlocking ? 'bloquant' : 'non bloquant'})
-            </Text>
-  
-            {status === 'idle' && (
-              <Button title="Combattre ce monstre" onPress={handleStartFight} />
-            )}
-  
-            {status === 'inProgress' && (
-              <ActivityIndicator size="large" />
-            )}
-  
-            {status !== 'idle' && result && currentFoughtPageId === currentPage.pageId && (
-              <View style={styles.resultBox}>
-                <Text style={styles.resultText}>{result.log}</Text>
-                {status === 'won' && <Text style={{ color: 'green' }}>✅ Victoire ! Tu peux avancer.</Text>}
-                {status === 'lost' && <Text style={{ color: 'red' }}>💀 Défaite... (retour au début à implémenter)</Text>}
-              </View>
-            )}
-          </View>
-        )}
-  
-        <View style={styles.choices}>
-          {currentPage.choices.map((choice, index) => (
-            <Button
-              key={index}
-              title={choice.text}
-              onPress={() => {
-                if (currentPage.isBlocking && status !== 'won') return;
-                goToPage(choice.nextPage, currentPage.pageId);
-              }}
+        <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.pageNumber}>Page {currentPage.pageNumber}</Text>
+
+          <TextCard content={currentPage.content} />
+
+          {currentPage.monsterId && (
+            <MonsterFightBlock
+              monsterName={currentPage.monster}
+              isBlocking={currentPage.isBlocking}
+              pageId={currentPage.pageId}
+              status={status}
+              result={result?.log || null}
+              currentFoughtPageId={currentFoughtPageId}
+              onFight={handleStartFight}
             />
-          ))}
-        </View>
-      </ScrollView>
+          )}
+
+    <View style={styles.choices}>
+      {currentPage.choices.map((choice, index) => (
+        <PrimaryButton
+          key={index}
+          title={choice.text}
+          onPress={() => {
+            if (currentPage.isBlocking && status !== 'won') return;
+            goToPage(choice.nextPage, currentPage.pageId);
+          }}
+        />
+      ))}
+    </View>
+  </ScrollView>
+
     </>
   );
   

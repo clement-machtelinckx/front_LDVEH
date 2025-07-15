@@ -5,10 +5,10 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
-  Pressable,
 } from 'react-native';
 import { useBookStore } from '@/store/useBookStore';
 import { useRouter } from 'expo-router';
+import BookCard from '@/components/common/BookCard';
 
 const BookScreen = () => {
   const { books, loading, error, fetchBooks } = useBookStore();
@@ -28,20 +28,19 @@ const BookScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>📚 Choisis ton livre</Text>
+
       <FlatList
         data={books}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
-          <Pressable style={styles.card} onPress={() => handleBookPress(item.id)}>
-            <Text style={styles.bookTitle}>{item.title}</Text>
-            <Text style={styles.bookDesc}>{item.description}</Text>
-
-            <View style={styles.metaInfo}>
-              <Text style={styles.meta}>📄 {item.page?.length ?? 0} pages</Text>
-              <Text style={styles.meta}>✍️ {item.author ?? 'Auteur inconnu'}</Text>
-            </View>
-          </Pressable>
+          <BookCard
+            title={item.title}
+            description={item.description}
+            pagesCount={item.page?.length}
+            author={item.author}
+            onPress={() => handleBookPress(item.id)}
+          />
         )}
       />
     </View>
@@ -57,25 +56,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   list: { gap: 16 },
-  card: {
-    padding: 16,
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 12,
-    backgroundColor: '#f3f3f3',
-    elevation: 2,
-  },
-  bookTitle: { fontSize: 18, fontWeight: '600' },
-  bookDesc: { fontSize: 14, color: '#555', marginTop: 6 },
-  metaInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-  },
-  meta: {
-    fontSize: 12,
-    color: '#777',
-  },
 });
 
 export default BookScreen;

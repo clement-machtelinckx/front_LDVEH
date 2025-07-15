@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/store/useAuth';
+import NavLink from '@/components/common/NavLink';
+import PrimaryButton from '@/components/common/PrimaryButton';
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
@@ -52,12 +54,9 @@ export default function RegisterScreen() {
       {isLoading ? (
         <ActivityIndicator size="large" />
       ) : (
-        <Button title="Créer un compte" onPress={handleRegister} />
+        <PrimaryButton title="Crée un compte" onPress={handleRegister} />
       )}
-
-      <TouchableOpacity onPress={() => router.push('/login')}>
-        <Text style={styles.link}>Déjà un compte ? Connecte-toi</Text>
-      </TouchableOpacity>
+      <NavLink title="Déjà un compte ? Connecte-toi" href="/login" />
     </View>
   );
 }

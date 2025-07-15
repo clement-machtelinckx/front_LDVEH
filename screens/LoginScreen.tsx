@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/store/useAuth';
+import NavLink from '@/components/common/NavLink';
+import PrimaryButton from '@/components/common/PrimaryButton';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -52,14 +54,9 @@ export default function Login() {
       {isLoading ? (
         <ActivityIndicator size="large" />
       ) : (
-        <Button title="Se connecter" onPress={handleLogin} />
+        <PrimaryButton title="Se connecter" onPress={handleLogin} />
       )}
-
-      <TouchableOpacity onPress={() => router.push('/register')}>
-        <Text style={styles.link}>
-          Pas encore de compte ? Inscris-toi
-        </Text>
-      </TouchableOpacity>
+    <NavLink title="Pas encore de compte ? Inscris-toi" href="/register" />
     </View>
   );
 }

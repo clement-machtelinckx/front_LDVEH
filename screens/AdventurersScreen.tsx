@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator, Button } from 'rea
 import { useRouter } from 'expo-router';
 import { useAdventureStore } from '@/store/useAdventureStore';
 import { useAdventurerStore } from '@/store/useAdventurerStore';
+import AdventurerCard from '@/components/common/AdventurerCard';
 
 type Adventurer = {
   id: number;
@@ -38,42 +39,39 @@ export default function AdventurersScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🧙‍♂️ Tes Aventuriers</Text>
-      <FlatList
-        data={adventurers}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.name}>{item.AdventurerName}</Text>
-            <Text>⚔️ Habileté : {item.Ability} | ❤️ Endurance : {item.Endurance}</Text>
-
-            {item.adventure ? (
-              <>
-                <Text style={styles.adventure}>
-                  📖 {item.adventure.book.title} – Page {item.adventure.currentPage.pageNumber}
-                </Text>
-                <Button
-                  title="➡️ Reprendre"
-                  onPress={() => {
-                    setActiveAdventurer(item);
-                    useAdventureStore.setState({
-                      adventureId: item.adventure!.id,
-                      adventurerId: item.id,
-                    });
-                    router.replace(`/page/${item.adventure!.currentPage.id}`);
-                  }}
-                />
-              </>
-            ) : (
-              <Text style={styles.noAdventure}>Aucune aventure en cours</Text>
-            )}
-          </View>
-        )}
-      />
+    <FlatList
+      data={adventurers}
+      keyExtractor={(item) => item.id.toString()}
+      contentContainerStyle={styles.list}
+      ListHeaderComponent={
+        <Text style={styles.title}>🧙‍♂️ Tes Aventuriers</Text>
+      }
+      renderItem={({ item }) => (
+        <AdventurerCard
+          name={item.AdventurerName}
+          ability={item.Ability}
+          endurance={item.Endurance}
+          bookTitle={item.adventure?.book.title}
+          currentPage={item.adventure?.currentPage.pageNumber}
+          onResume={
+            item.adventure
+              ? () => {
+                  setActiveAdventurer(item);
+                  useAdventureStore.setState({
+                    adventureId: item.adventure!.id,
+                    adventurerId: item.id,
+                  });
+                  router.replace(`/page/${item.adventure!.currentPage.id}`);
+                }
+              : undefined
+          }
+        />
+      )}
+    />
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 24 },
