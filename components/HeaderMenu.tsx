@@ -1,11 +1,13 @@
-// components/HeaderMenu.tsx
-import { View, Text, Pressable, StyleSheet, Image, SafeAreaView  } from 'react-native';
+// components/BottomNavBar.tsx
+import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/store/useAuth';
 
-export default function HeaderMenu() {
+export default function BottomNavBar() {
   const router = useRouter();
   const { logout } = useAuth();
+  const { width } = useWindowDimensions();
+  const isCompact = width < 500;
 
   const handleLogout = async () => {
     await logout();
@@ -13,24 +15,28 @@ export default function HeaderMenu() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Image
-          source={require('@/assets/images/logo_serpent.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-        <MenuButton label="🏠 Accueil" onPress={() => router.push('/')} />
-        <MenuButton label="📚 Livres" onPress={() => router.push('/book')} />
-        <MenuButton label="🧙 Aventuriers" onPress={() => router.push('/adventurers')} />
-        <MenuButton label="🚪 Déconnexion" onPress={handleLogout} danger />
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <NavButton icon="🏠" label="Accueil" onPress={() => router.push('/')} compact={isCompact} />
+      <NavButton icon="📚" label="Livres" onPress={() => router.push('/book')} compact={isCompact} />
+      <NavButton icon="🧙" label="Aventuriers" onPress={() => router.push('/adventurers')} compact={isCompact} />
+      <NavButton icon="🚪" label="Logout" onPress={handleLogout} danger compact={isCompact} />
+    </View>
   );
 }
 
-
-function MenuButton({ label, onPress, danger = false }: { label: string; onPress: () => void; danger?: boolean }) {
+function NavButton({
+  icon,
+  label,
+  onPress,
+  danger = false,
+  compact = false,
+}: {
+  icon: string;
+  label: string;
+  onPress: () => void;
+  danger?: boolean;
+  compact?: boolean;
+}) {
   return (
     <Pressable
       style={({ pressed }) => [
@@ -40,52 +46,45 @@ function MenuButton({ label, onPress, danger = false }: { label: string; onPress
       ]}
       onPress={onPress}
     >
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>
+        {icon}
+        {!compact && ` ${label}`}
+      </Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-    safeArea: {
-      backgroundColor: '#f9f9f9',
-    },
-    container: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-around',
-      paddingVertical: 10,
-      backgroundColor: '#f9f9f9',
-      borderBottomWidth: 1,
-      borderColor: '#ddd',
-      marginTop: 40,
-    },
-
-  logo: {
-    width: 50,
-    height: 50,
-    marginRight: 12,
-  },
-  button: {
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
     paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    borderWidth: 1,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
     borderColor: '#ddd',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    elevation: 10, // Android shadow
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: -2 },
   },
-  danger: {
-    borderColor: '#ff4d4d',
-    backgroundColor: '#fff5f5',
-  },
-  pressed: {
-    opacity: 0.7,
+  button: {
+    padding: 10,
+    alignItems: 'center',
   },
   label: {
     fontSize: 14,
     color: '#333',
+  },
+  danger: {
+    color: '#ff4d4d',
+  },
+  pressed: {
+    opacity: 0.6,
   },
 });

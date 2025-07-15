@@ -22,7 +22,7 @@ export default function RegisterScreen() {
   const handleRegister = async () => {
     const success = await register(email, password);
     if (success) {
-      router.replace('/login'); // ✅ ou '/login' si tu préfères étape intermédiaire
+      router.replace('/login'); 
     } else {
       Alert.alert('Erreur', error || 'Impossible de créer un compte');
     }
