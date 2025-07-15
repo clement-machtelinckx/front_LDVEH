@@ -6,17 +6,19 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useAuth } from '@/store/useAuth';
-import HeaderMenu from '@/components/HeaderMenu';
-
+import HeaderMenu from '@/components/layout/HeaderMenu';
+import { useErrorStore } from '@/store/useErrorStore';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import ErrorMessage from '@/components/common/ErrorMessage';
+import { View } from 'react-native';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const initAuth = useAuth((state) => state.init);
   const authReady = useAuth((state) => state.authReady);
   const colorScheme = useColorScheme();
+  const { error, clearError } = useErrorStore();
 
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -35,17 +37,17 @@ export default function RootLayout() {
   if (!loaded || !authReady) {
     return null;
   }
-
-  return (
-    <ThemeProvider value={DefaultTheme}>
-          <HeaderMenu />
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+return (
+  <ThemeProvider value={DefaultTheme}>
+    <View style={{ flex: 1 }}>
+      <ErrorMessage message={error} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
       <HeaderMenu />
-    </ThemeProvider>
-  );
+    </View>
+  </ThemeProvider>
+);
 }
-

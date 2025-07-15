@@ -14,6 +14,8 @@ import EndingModal from '@/components/EndingModal';
 import TextCard from '@/components/common/TextCard';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import MonsterFightBlock from '@/components/metier/MonsterFightBlock';
+import { useErrorStore } from '@/store/useErrorStore';
+
 
 
 
@@ -21,6 +23,8 @@ export default function PageScreen() {
   const { pageId } = useLocalSearchParams();
   const router = useRouter();
   const { currentPage, goToPage } = useAdventureStore();
+  const { setError } = useErrorStore();
+
 
   const {
     status,
@@ -77,9 +81,13 @@ export default function PageScreen() {
           key={index}
           title={choice.text}
           onPress={() => {
-            if (currentPage.isBlocking && status !== 'won') return;
+            if (currentPage.isBlocking && status !== 'won') {
+              setError("Tu dois d'abord vaincre le monstre pour continuer !");
+              return;
+            }
             goToPage(choice.nextPage, currentPage.pageId);
           }}
+
         />
       ))}
     </View>
@@ -96,8 +104,8 @@ const styles = StyleSheet.create({
 content: {
   fontSize: 16,
   textAlign: 'center',
-  backgroundColor: '#f9f9f9', // blanc cassé
-  borderColor: '#ddd',        // bordure douce
+  backgroundColor: '#f9f9f9',
+  borderColor: '#ddd',        
   borderWidth: 1,
   borderRadius: 8,
   padding: 16,
