@@ -12,7 +12,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAdventureStore } from '@/store/useAdventureStore';
 
 export default function StartAdventureScreen() {
-  const { bookId } = useLocalSearchParams(); // 🔁 transmis via route
+  const { bookId } = useLocalSearchParams(); 
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
