@@ -5,16 +5,19 @@ import {
   StyleSheet,
   Button,
   ScrollView,
-  ActivityIndicator,
+  ActivityIndicator
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAdventureStore } from '@/store/useAdventureStore';
+import { useAdventurerStore } from '@/store/useAdventurerStore';
 import { useCombatStore } from '@/store/useCombatStore';
-import EndingModal from '@/components/EndingModal';
+import { useErrorStore } from '@/store/useErrorStore';
 import TextCard from '@/components/common/TextCard';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import MonsterFightBlock from '@/components/metier/MonsterFightBlock';
-import { useErrorStore } from '@/store/useErrorStore';
+import AdventurerStats from '@/components/common/AdventurerStats';
+
+
 
 
 
@@ -22,9 +25,11 @@ import { useErrorStore } from '@/store/useErrorStore';
 export default function PageScreen() {
   const { pageId } = useLocalSearchParams();
   const router = useRouter();
-  const { currentPage, goToPage } = useAdventureStore();
+const { currentPage, goToPage } = useAdventureStore();
+const { activeAdventurer } = useAdventurerStore(); // ✅ le bon store
   const { setError } = useErrorStore();
 
+  console.log("activeAdventurer", activeAdventurer);
 
   const {
     status,
@@ -56,8 +61,14 @@ export default function PageScreen() {
 
   return (
     <>
-      <EndingModal visible={!!currentPage?.endingType} type={currentPage?.endingType || null} />
-  
+
+        <AdventurerStats
+          name={activeAdventurer?.AdventurerName || 'Inconnu'}
+          ability={activeAdventurer?.Ability || 0}
+          endurance={activeAdventurer?.Endurance || 0}
+          bookTitle={currentPage.bookTitle}
+          currentPage={currentPage.pageNumber}
+        />
         <ScrollView contentContainerStyle={styles.container}>
           <Text style={styles.pageNumber}>Page {currentPage.pageNumber}</Text>
 
@@ -76,21 +87,51 @@ export default function PageScreen() {
           )}
 
     <View style={styles.choices}>
-      {currentPage.choices.map((choice, index) => (
+      {currentPage.endingType ? (
         <PrimaryButton
-          key={index}
-          title={choice.text}
-          onPress={() => {
-            if (currentPage.isBlocking && status !== 'won') {
-              setError("Tu dois d'abord vaincre le monstre pour continuer !");
-              return;
-            }
-            goToPage(choice.nextPage, currentPage.pageId);
-          }}
+          title={
+            currentPage.endingType === 'victory'
+              ? '🎉 Terminer l’aventure'
+              : '💀 Recommencer'
+          }
+          onPress={async () => {
+            const {
+              adventureId,
+              clearAdventure,
+              finishAdventure,
+              deleteAdventure,
+            } = useAdventureStore.getState();
 
+            if (!adventureId) return;
+
+            const success =
+              currentPage.endingType === 'victory'
+                ? await finishAdventure(adventureId)
+                : await deleteAdventure(adventureId);
+
+            if (success) {
+              clearAdventure();
+              router.replace('/book');
+            }
+          }}
         />
-      ))}
+      ) : (
+        currentPage.choices.map((choice, index) => (
+          <PrimaryButton
+            key={index}
+            title={choice.text}
+            onPress={() => {
+              if (currentPage.isBlocking && status !== 'won') {
+                setError("Tu dois d'abord vaincre le monstre pour continuer !");
+                return;
+              }
+              goToPage(choice.nextPage, currentPage.pageId);
+            }}
+          />
+        ))
+      )}
     </View>
+
   </ScrollView>
 
     </>

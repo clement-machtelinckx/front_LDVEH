@@ -40,7 +40,7 @@ export const useAuth = create<AuthState>((set) => ({
     const data = await res.json(); 
 
     if (!res.ok) {
-      throw new Error(data.error || 'Erreur de connexion'); // ✅ utilise le vrai message du backend
+      throw new Error(data.error || 'Erreur de connexion'); 
     }
       await AsyncStorage.setItem('token', data.token);
       set({ token: data.token, isLoading: false });
@@ -62,7 +62,7 @@ export const useAuth = create<AuthState>((set) => ({
 
       const data = await res.json(); 
     if (!res.ok) {
-      throw new Error(data.error || 'Erreur d\'inscription'); // ✅ utilise le vrai message du backend
+      throw new Error(data.error || 'Erreur d\'inscription'); 
     }
 
       set({ isLoading: false });

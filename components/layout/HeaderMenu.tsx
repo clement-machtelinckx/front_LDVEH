@@ -17,8 +17,12 @@ export default function BottomNavBar() {
 
   const buttons = [
     { icon: '🏠', label: 'Accueil', onPress: () => router.push('/') },
+    !token && { icon: '📖', label: 'Connexion', onPress: () => router.push('/login') },
+    !token && { icon: '📝', label: 'Inscription', onPress: () => router.push('/register') },
     token && { icon: '📚', label: 'Livres', onPress: () => router.push('/book') },
     token && { icon: '🧙', label: 'Aventuriers', onPress: () => router.push('/adventurers') },
+    token && { icon: '👤', label: 'Profil', onPress: () => router.push('/profile') },
+    token && { icon: '🏆', label: 'Classement', onPress: () => router.push('/ranking') },
     token && { icon: '🚪', label: 'Logout', onPress: handleLogout, danger: true },
   ].filter(Boolean);
 
