@@ -37,9 +37,11 @@ export const useAuth = create<AuthState>((set) => ({
         body: JSON.stringify({ email, password }),
       });
 
-      if (!res.ok) throw new Error('Identifiants incorrects');
+    const data = await res.json(); 
 
-      const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || 'Erreur de connexion'); 
+    }
       await AsyncStorage.setItem('token', data.token);
       set({ token: data.token, isLoading: false });
       return true;
@@ -58,7 +60,10 @@ export const useAuth = create<AuthState>((set) => ({
         body: JSON.stringify({ email, password }),
       });
 
-      if (!res.ok) throw new Error('Erreur lors de l’inscription');
+      const data = await res.json(); 
+    if (!res.ok) {
+      throw new Error(data.error || 'Erreur d\'inscription'); 
+    }
 
       set({ isLoading: false });
       return true;

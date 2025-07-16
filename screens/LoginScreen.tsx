@@ -11,26 +11,32 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/store/useAuth';
+import NavLink from '@/components/common/NavLink';
+import PrimaryButton from '@/components/common/PrimaryButton';
+import { useErrorStore } from '@/store/useErrorStore';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, error } = useAuth();
+  const { login, error: authError } = useAuth();
   const isLoading = useAuth((s) => s.isLoading);
+  const { setError, clearError } = useErrorStore();
   const router = useRouter();
 
   const handleLogin = async () => {
+    clearError();
     const success = await login(email, password);
     if (success) {
-      router.replace('/book'); // ✅ à jour avec la bonne route
+      router.replace('/book'); 
     } else {
-      Alert.alert('Erreur', error || 'Échec de la connexion');
+      setError(authError || 'Échec de la connexion');
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Connexion</Text>
+
 
       <TextInput
         style={styles.input}
@@ -52,14 +58,9 @@ export default function Login() {
       {isLoading ? (
         <ActivityIndicator size="large" />
       ) : (
-        <Button title="Se connecter" onPress={handleLogin} />
+        <PrimaryButton title="Se connecter" onPress={handleLogin} />
       )}
-
-      <TouchableOpacity onPress={() => router.push('/register')}>
-        <Text style={styles.link}>
-          Pas encore de compte ? Inscris-toi
-        </Text>
-      </TouchableOpacity>
+    <NavLink title="Pas encore de compte ? Inscris-toi" href="/register" />
     </View>
   );
 }

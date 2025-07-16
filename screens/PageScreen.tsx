@@ -5,18 +5,31 @@ import {
   StyleSheet,
   Button,
   ScrollView,
-  ActivityIndicator,
+  ActivityIndicator
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAdventureStore } from '@/store/useAdventureStore';
+import { useAdventurerStore } from '@/store/useAdventurerStore';
 import { useCombatStore } from '@/store/useCombatStore';
-import EndingModal from '@/components/EndingModal';
+import { useErrorStore } from '@/store/useErrorStore';
+import TextCard from '@/components/common/TextCard';
+import PrimaryButton from '@/components/common/PrimaryButton';
+import MonsterFightBlock from '@/components/metier/MonsterFightBlock';
+import AdventurerStats from '@/components/common/AdventurerStats';
+
+
+
+
 
 
 export default function PageScreen() {
   const { pageId } = useLocalSearchParams();
   const router = useRouter();
-  const { currentPage, goToPage } = useAdventureStore();
+const { currentPage, goToPage } = useAdventureStore();
+const { activeAdventurer } = useAdventurerStore(); // ✅ le bon store
+  const { setError } = useErrorStore();
+
+  console.log("activeAdventurer", activeAdventurer);
 
   const {
     status,
@@ -48,49 +61,79 @@ export default function PageScreen() {
 
   return (
     <>
-      <EndingModal visible={!!currentPage?.endingType} type={currentPage?.endingType || null} />
-  
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.pageNumber}>Page {currentPage.pageNumber}</Text>
-        <Text style={styles.content}>{currentPage.content}</Text>
-  
-        {currentPage.monsterId && (
-          <View style={styles.combatBlock}>
-            <Text style={styles.blocking}>
-              ⚔️ Monstre : {currentPage.monster} ({currentPage.isBlocking ? 'bloquant' : 'non bloquant'})
-            </Text>
-  
-            {status === 'idle' && (
-              <Button title="Combattre ce monstre" onPress={handleStartFight} />
-            )}
-  
-            {status === 'inProgress' && (
-              <ActivityIndicator size="large" />
-            )}
-  
-            {status !== 'idle' && result && currentFoughtPageId === currentPage.pageId && (
-              <View style={styles.resultBox}>
-                <Text style={styles.resultText}>{result.log}</Text>
-                {status === 'won' && <Text style={{ color: 'green' }}>✅ Victoire ! Tu peux avancer.</Text>}
-                {status === 'lost' && <Text style={{ color: 'red' }}>💀 Défaite... (retour au début à implémenter)</Text>}
-              </View>
-            )}
-          </View>
-        )}
-  
-        <View style={styles.choices}>
-          {currentPage.choices.map((choice, index) => (
-            <Button
-              key={index}
-              title={choice.text}
-              onPress={() => {
-                if (currentPage.isBlocking && status !== 'won') return;
-                goToPage(choice.nextPage, currentPage.pageId);
-              }}
+
+        <AdventurerStats
+          name={activeAdventurer?.AdventurerName || 'Inconnu'}
+          ability={activeAdventurer?.Ability || 0}
+          endurance={activeAdventurer?.Endurance || 0}
+          bookTitle={currentPage.bookTitle}
+          currentPage={currentPage.pageNumber}
+        />
+        <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.pageNumber}>Page {currentPage.pageNumber}</Text>
+
+          <TextCard content={currentPage.content} />
+
+          {currentPage.monsterId && (
+            <MonsterFightBlock
+              monsterName={currentPage.monster}
+              isBlocking={currentPage.isBlocking}
+              pageId={currentPage.pageId}
+              status={status}
+              result={result?.log || null}
+              currentFoughtPageId={currentFoughtPageId}
+              onFight={handleStartFight}
             />
-          ))}
-        </View>
-      </ScrollView>
+          )}
+
+    <View style={styles.choices}>
+      {currentPage.endingType ? (
+        <PrimaryButton
+          title={
+            currentPage.endingType === 'victory'
+              ? '🎉 Terminer l’aventure'
+              : '💀 Recommencer'
+          }
+          onPress={async () => {
+            const {
+              adventureId,
+              clearAdventure,
+              finishAdventure,
+              deleteAdventure,
+            } = useAdventureStore.getState();
+
+            if (!adventureId) return;
+
+            const success =
+              currentPage.endingType === 'victory'
+                ? await finishAdventure(adventureId)
+                : await deleteAdventure(adventureId);
+
+            if (success) {
+              clearAdventure();
+              router.replace('/book');
+            }
+          }}
+        />
+      ) : (
+        currentPage.choices.map((choice, index) => (
+          <PrimaryButton
+            key={index}
+            title={choice.text}
+            onPress={() => {
+              if (currentPage.isBlocking && status !== 'won') {
+                setError("Tu dois d'abord vaincre le monstre pour continuer !");
+                return;
+              }
+              goToPage(choice.nextPage, currentPage.pageId);
+            }}
+          />
+        ))
+      )}
+    </View>
+
+  </ScrollView>
+
     </>
   );
   
@@ -102,8 +145,8 @@ const styles = StyleSheet.create({
 content: {
   fontSize: 16,
   textAlign: 'center',
-  backgroundColor: '#f9f9f9', // blanc cassé
-  borderColor: '#ddd',        // bordure douce
+  backgroundColor: '#f9f9f9',
+  borderColor: '#ddd',        
   borderWidth: 1,
   borderRadius: 8,
   padding: 16,

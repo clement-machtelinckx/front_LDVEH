@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAdventureStore } from '@/store/useAdventureStore';
+import PrimaryButton from '@/components/common/PrimaryButton';
 
 export default function StartAdventureScreen() {
   const { bookId } = useLocalSearchParams(); 
@@ -54,7 +55,10 @@ export default function StartAdventureScreen() {
       {loading ? (
         <ActivityIndicator size="large" />
       ) : (
-        <Button title="Commencer l’aventure" onPress={handleStart} />
+        <PrimaryButton
+          title="Démarrer l’aventure"
+          onPress={handleStart}
+        />
       )}
     </View>
   );

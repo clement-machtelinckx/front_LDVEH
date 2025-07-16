@@ -11,20 +11,25 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/store/useAuth';
+import NavLink from '@/components/common/NavLink';
+import PrimaryButton from '@/components/common/PrimaryButton';
+import { useErrorStore } from '@/store/useErrorStore';
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
-  const { register, error } = useAuth();
+  const { register, error: authError } = useAuth();
   const isLoading = useAuth((s) => s.isLoading);
+    const { setError, clearError } = useErrorStore();
 
   const handleRegister = async () => {
+    clearError();
     const success = await register(email, password);
     if (success) {
       router.replace('/login'); 
     } else {
-      Alert.alert('Erreur', error || 'Impossible de créer un compte');
+      setError(authError || 'Échec de l\'inscription');
     }
   };
 
@@ -52,12 +57,9 @@ export default function RegisterScreen() {
       {isLoading ? (
         <ActivityIndicator size="large" />
       ) : (
-        <Button title="Créer un compte" onPress={handleRegister} />
+        <PrimaryButton title="Crée un compte" onPress={handleRegister} />
       )}
-
-      <TouchableOpacity onPress={() => router.push('/login')}>
-        <Text style={styles.link}>Déjà un compte ? Connecte-toi</Text>
-      </TouchableOpacity>
+      <NavLink title="Déjà un compte ? Connecte-toi" href="/login" />
     </View>
   );
 }
