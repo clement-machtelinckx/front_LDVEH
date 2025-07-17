@@ -13,7 +13,7 @@ import { useAdventurerStore } from '@/store/useAdventurerStore';
 import { useAdventureStore } from '@/store/useAdventureStore';
 import { useRouter } from 'expo-router';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import AdventurerCard from '@/components/common/AdventurerCard';
+import AdventurerList from '@/components/metier/AdventurerList';
 
 export default function ProfileScreen() {
   const { profile, fetchProfile, updateProfile, loading, error } = useProfile();
@@ -54,13 +54,19 @@ export default function ProfileScreen() {
     }
   };
 
-  if (loading && !profile) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  const handleResume = (a) => {
+    setActiveAdventurer(a);
+    useAdventureStore.setState({
+      adventureId: a.adventure!.id,
+      adventurerId: a.id,
+    });
+    router.replace(`/page/${a.adventure!.currentPage.id}`);
+  };
+
+  const handleDelete = async (a) => {
+    const success = await useAdventureStore.getState().deleteAdventure(a.adventure.id);
+    if (success) fetchAdventurers();
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -97,33 +103,15 @@ export default function ProfileScreen() {
 
       <Text style={[styles.title, { marginTop: 32 }]}>👤 Mes aventuriers</Text>
 
-        {loadingAdventurers ? (
+      {loadingAdventurers ? (
         <ActivityIndicator size="small" />
-        ) : (
-        adventurers.map((a) => (
-            <AdventurerCard
-            key={a.id}
-            name={a.AdventurerName}
-            ability={a.Ability}
-            endurance={a.Endurance}
-            bookTitle={a.adventure?.book.title}
-            currentPage={a.adventure?.currentPage.pageNumber}
-            onResume={
-                a.adventure
-                ? () => {
-                    setActiveAdventurer(a);
-                    useAdventureStore.setState({
-                        adventureId: a.adventure!.id,
-                        adventurerId: a.id,
-                    });
-                    router.replace(`/page/${a.adventure!.currentPage.id}`);
-                    }
-                : undefined
-            }
-            />
-        ))
-        )}
-
+      ) : (
+        <AdventurerList
+          adventurers={adventurers}
+          onResume={handleResume}
+          onDelete={handleDelete}
+        />
+      )}
     </ScrollView>
   );
 }
@@ -147,10 +135,5 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 12,
     borderRadius: 8,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
