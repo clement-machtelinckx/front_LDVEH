@@ -1,4 +1,4 @@
-import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, Text, FlatList } from 'react-native';
 import AdventurerCard from '@/components/common/AdventurerCard';
 
 type Adventurer = {
@@ -26,21 +26,23 @@ export default function AdventurerList({ adventurers, loading, onResume, onDelet
   if (!adventurers.length) return <Text>Aucun aventurier trouvé.</Text>;
 
   return (
-    <View style={styles.list}>
-      {adventurers.map((a) => (
-        <AdventurerCard
-        key={a.id}
-        name={a.AdventurerName}
-        ability={a.Ability}
-        endurance={a.Endurance}
-        bookTitle={a.adventure.book.title}
-        currentPage={a.adventure.currentPage.pageNumber}
-        onResume={() => onResume?.(a)}
-        onDelete={() => onDelete?.(a)}
-        />
-
-      ))}
-    </View>
+ <FlatList
+    data={adventurers.filter((a) => a.adventure)}
+    keyExtractor={(item) => item.id.toString()}
+    renderItem={({ item }) => (
+      <AdventurerCard
+        name={item.AdventurerName}
+        ability={item.Ability}
+        endurance={item.Endurance}
+        bookTitle={item.adventure?.book?.title}
+        currentPage={item.adventure?.currentPage?.pageNumber}
+        onResume={() => onResume?.(item)}
+        onDelete={() => onDelete?.(item)}
+      />
+    )}
+    contentContainerStyle={styles.list}
+    ListEmptyComponent={<Text>Aucun aventurier trouvé.</Text>}
+  />
   );
 }
 

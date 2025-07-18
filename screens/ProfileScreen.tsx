@@ -13,30 +13,36 @@ import { useAdventurerStore } from '@/store/useAdventurerStore';
 import { useAdventureStore } from '@/store/useAdventureStore';
 import { useRouter } from 'expo-router';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import AdventurerList from '@/components/metier/AdventurerList';
+
+import AdventureHistoryList from '@/components/metier/AdventureHistoryList';
 
 export default function ProfileScreen() {
   const { profile, fetchProfile, updateProfile, loading, error } = useProfile();
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { setActiveAdventurer } = useAdventurerStore();
+  const { userHistories, fetchUserHistories } = useAdventureStore();
   const router = useRouter();
+  const { fetchAdventurers } = useAdventurerStore();
 
-  const {
-    adventurers,
-    fetchAdventurers,
-    loading: loadingAdventurers,
-  } = useAdventurerStore();
 
-  useEffect(() => {
-    fetchProfile();
-    fetchAdventurers();
-  }, []);
+useEffect(() => {
+  fetchProfile();
+  fetchAdventurers();
+}, []);
 
-  useEffect(() => {
-    if (profile) setEmail(profile.email);
-  }, [profile]);
+useEffect(() => {
+  if (profile?.email) {
+    setEmail(profile.email);
+  }
+}, [profile]);
+
+useEffect(() => {
+  if (profile?.id) {
+    useAdventureStore.getState().fetchUserHistories(profile.id);
+  }
+}, [profile?.id]);
+
 
   const handleUpdate = async () => {
     if (newPassword && newPassword !== confirmPassword) {
@@ -54,19 +60,7 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleResume = (a) => {
-    setActiveAdventurer(a);
-    useAdventureStore.setState({
-      adventureId: a.adventure!.id,
-      adventurerId: a.id,
-    });
-    router.replace(`/page/${a.adventure!.currentPage.id}`);
-  };
 
-  const handleDelete = async (a) => {
-    const success = await useAdventureStore.getState().deleteAdventure(a.adventure.id);
-    if (success) fetchAdventurers();
-  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -98,20 +92,10 @@ export default function ProfileScreen() {
         secureTextEntry
         placeholder="Re-saisir le mot de passe"
       />
-
       <PrimaryButton title="Mettre à jour" onPress={handleUpdate} />
 
-      <Text style={[styles.title, { marginTop: 32 }]}>👤 Mes aventuriers</Text>
-
-      {loadingAdventurers ? (
-        <ActivityIndicator size="small" />
-      ) : (
-        <AdventurerList
-          adventurers={adventurers}
-          onResume={handleResume}
-          onDelete={handleDelete}
-        />
-      )}
+      <Text style={[styles.title, { marginTop: 32 }]}>🏁 Aventures terminées</Text>
+      <AdventureHistoryList histories={userHistories} />
     </ScrollView>
   );
 }
