@@ -4,7 +4,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '@/constants/api';
 
 type Profile = {
+  id: number;
   email: string;
+  firstname?: string;
+  lastname?: string;
+  nickname?: string;
+  gender?: 'male' | 'female' | 'other' | null;
+  age?: number | null;
 };
 
 type ProfileStore = {
@@ -12,7 +18,7 @@ type ProfileStore = {
   loading: boolean;
   error: string | null;
   fetchProfile: () => Promise<void>;
-  updateProfile: (payload: { email: string; newPassword?: string }) => Promise<boolean>;
+  updateProfile: (payload: Partial<Profile> & { newPassword?: string }) => Promise<boolean>;
 };
 
 export const useProfile = create<ProfileStore>((set) => ({
@@ -40,16 +46,20 @@ export const useProfile = create<ProfileStore>((set) => ({
     }
   },
 
-  updateProfile: async ({ email, newPassword }) => {
+  updateProfile: async (payload) => {
     try {
       const token = await AsyncStorage.getItem('token');
+      const { newPassword, ...rest } = payload;
+      const body = { ...rest };
+      if (newPassword) body.newPassword = newPassword;
+
       const res = await fetch(`${API_URL}/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ email, newPassword }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {

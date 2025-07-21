@@ -12,7 +12,7 @@ export default function RankingScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>🏆 Classement des Aventuriers</Text>
+      <Text style={styles.title}>🏆 Hall of Fame !!</Text>
 
       {histories.length === 0 ? (
         <ActivityIndicator size="large" />

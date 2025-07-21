@@ -5,15 +5,15 @@ import {
   TextInput,
   Alert,
   StyleSheet,
-  ActivityIndicator,
   ScrollView,
+  Picker
 } from 'react-native';
+// import { Picker } from '@react-native-picker/picker';
 import { useProfile } from '@/store/useProfile';
-import { useAdventurerStore } from '@/store/useAdventurerStore';
+// import { useAdventurerStore } from '@/store/useAdventurerStore';
 import { useAdventureStore } from '@/store/useAdventureStore';
 import { useRouter } from 'expo-router';
 import PrimaryButton from '@/components/common/PrimaryButton';
-
 import AdventureHistoryList from '@/components/metier/AdventureHistoryList';
 
 export default function ProfileScreen() {
@@ -21,27 +21,38 @@ export default function ProfileScreen() {
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [gender, setGender] = useState<'male' | 'female' | 'other' | ''>('');
+  const [age, setAge] = useState('');
   const { userHistories, fetchUserHistories } = useAdventureStore();
   const router = useRouter();
-  const { fetchAdventurers } = useAdventurerStore();
+  // const { fetchAdventurers } = useAdventurerStore();
 
+  useEffect(() => {
+    fetchProfile();
+    // fetchAdventurers();
+  }, []);
 
-useEffect(() => {
-  fetchProfile();
-  fetchAdventurers();
-}, []);
+  // profile loaded → update states
+  useEffect(() => {
+    if (profile) {
+      setEmail(profile.email || '');
+      setFirstname(profile.firstname || '');
+      setLastname(profile.lastname || '');
+      setNickname(profile.nickname || '');
+      setGender(profile.gender || '');
+      setAge(profile.age?.toString() || '');
+    }
+  }, [profile]);
 
-useEffect(() => {
-  if (profile?.email) {
-    setEmail(profile.email);
-  }
-}, [profile]);
-
-useEffect(() => {
-  if (profile?.id) {
-    useAdventureStore.getState().fetchUserHistories(profile.id);
-  }
-}, [profile?.id]);
+  // once profile.id is ready → fetch user histories
+  useEffect(() => {
+    if (profile?.id) {
+      fetchUserHistories(profile.id); 
+    }
+  }, [profile?.id]);
 
 
   const handleUpdate = async () => {
@@ -50,7 +61,16 @@ useEffect(() => {
       return;
     }
 
-    const success = await updateProfile({ email, newPassword: newPassword || undefined });
+    const success = await updateProfile({
+      email,
+      firstname,
+      lastname,
+      nickname,
+      gender: gender || null,
+      age: age ? parseInt(age, 10) : null,
+      newPassword: newPassword || undefined,
+    });
+
     if (success) {
       Alert.alert('✅ Succès', 'Profil mis à jour');
       setNewPassword('');
@@ -59,8 +79,6 @@ useEffect(() => {
       Alert.alert('❌ Erreur', error || 'Une erreur est survenue');
     }
   };
-
-
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -73,6 +91,37 @@ useEffect(() => {
         style={styles.input}
         autoCapitalize="none"
         keyboardType="email-address"
+      />
+
+      <Text style={styles.label}>Prénom</Text>
+      <TextInput value={firstname} onChangeText={setFirstname} style={styles.input} />
+
+      <Text style={styles.label}>Nom</Text>
+      <TextInput value={lastname} onChangeText={setLastname} style={styles.input} />
+
+      <Text style={styles.label}>Pseudo</Text>
+      <TextInput value={nickname} onChangeText={setNickname} style={styles.input} />
+
+      <Text style={styles.label}>Genre</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={gender}
+          onValueChange={(itemValue) => setGender(itemValue)}
+        >
+          <Picker.Item label="Sélectionner..." value="" />
+          <Picker.Item label="Homme" value="male" />
+          <Picker.Item label="Femme" value="female" />
+          <Picker.Item label="Autre" value="other" />
+        </Picker>
+      </View>
+
+
+      <Text style={styles.label}>Âge</Text>
+      <TextInput
+        value={age}
+        onChangeText={setAge}
+        style={styles.input}
+        keyboardType="numeric"
       />
 
       <Text style={styles.label}>Nouveau mot de passe</Text>
@@ -92,6 +141,7 @@ useEffect(() => {
         secureTextEntry
         placeholder="Re-saisir le mot de passe"
       />
+
       <PrimaryButton title="Mettre à jour" onPress={handleUpdate} />
 
       <Text style={[styles.title, { marginTop: 32 }]}>🏁 Aventures terminées</Text>
@@ -120,4 +170,11 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
   },
+  pickerContainer: {
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 8,
+  overflow: 'hidden',
+},
+
 });
