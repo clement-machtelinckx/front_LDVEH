@@ -22,7 +22,7 @@ export default function BottomNavBar() {
     token && { icon: '📚', label: 'Livres', onPress: () => router.push('/book') },
     token && { icon: '🧙', label: 'Aventuriers', onPress: () => router.push('/adventurers') },
     token && { icon: '👤', label: 'Profil', onPress: () => router.push('/profile') },
-    token && { icon: '🏆', label: 'Classement', onPress: () => router.push('/ranking') },
+    token && { icon: '🏆', label: 'Hall of Fame !!', onPress: () => router.push('/ranking') },
     token && { icon: '🚪', label: 'Logout', onPress: handleLogout, danger: true },
   ].filter(Boolean);
 
