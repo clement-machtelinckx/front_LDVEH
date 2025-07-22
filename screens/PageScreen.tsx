@@ -26,10 +26,9 @@ export default function PageScreen() {
   const { pageId } = useLocalSearchParams();
   const router = useRouter();
 const { currentPage, goToPage } = useAdventureStore();
-const { activeAdventurer } = useAdventurerStore(); // ✅ le bon store
+const { activeAdventurer } = useAdventurerStore();
   const { setError } = useErrorStore();
 
-  console.log("activeAdventurer", activeAdventurer);
 
   const {
     status,

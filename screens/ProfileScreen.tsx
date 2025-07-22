@@ -5,38 +5,55 @@ import {
   TextInput,
   Alert,
   StyleSheet,
-  ActivityIndicator,
   ScrollView,
+  Picker
 } from 'react-native';
+// import { Picker } from '@react-native-picker/picker';
 import { useProfile } from '@/store/useProfile';
-import { useAdventurerStore } from '@/store/useAdventurerStore';
+// import { useAdventurerStore } from '@/store/useAdventurerStore';
 import { useAdventureStore } from '@/store/useAdventureStore';
 import { useRouter } from 'expo-router';
 import PrimaryButton from '@/components/common/PrimaryButton';
-import AdventurerCard from '@/components/common/AdventurerCard';
+import AdventureHistoryList from '@/components/metier/AdventureHistoryList';
 
 export default function ProfileScreen() {
   const { profile, fetchProfile, updateProfile, loading, error } = useProfile();
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { setActiveAdventurer } = useAdventurerStore();
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [gender, setGender] = useState<'male' | 'female' | 'other' | ''>('');
+  const [age, setAge] = useState('');
+  const { userHistories, fetchUserHistories } = useAdventureStore();
   const router = useRouter();
-
-  const {
-    adventurers,
-    fetchAdventurers,
-    loading: loadingAdventurers,
-  } = useAdventurerStore();
+  // const { fetchAdventurers } = useAdventurerStore();
 
   useEffect(() => {
     fetchProfile();
-    fetchAdventurers();
+    // fetchAdventurers();
   }, []);
 
+  // profile loaded → update states
   useEffect(() => {
-    if (profile) setEmail(profile.email);
+    if (profile) {
+      setEmail(profile.email || '');
+      setFirstname(profile.firstname || '');
+      setLastname(profile.lastname || '');
+      setNickname(profile.nickname || '');
+      setGender(profile.gender || '');
+      setAge(profile.age?.toString() || '');
+    }
   }, [profile]);
+
+  // once profile.id is ready → fetch user histories
+  useEffect(() => {
+    if (profile?.id) {
+      fetchUserHistories(profile.id); 
+    }
+  }, [profile?.id]);
+
 
   const handleUpdate = async () => {
     if (newPassword && newPassword !== confirmPassword) {
@@ -44,7 +61,16 @@ export default function ProfileScreen() {
       return;
     }
 
-    const success = await updateProfile({ email, newPassword: newPassword || undefined });
+    const success = await updateProfile({
+      email,
+      firstname,
+      lastname,
+      nickname,
+      gender: gender || null,
+      age: age ? parseInt(age, 10) : null,
+      newPassword: newPassword || undefined,
+    });
+
     if (success) {
       Alert.alert('✅ Succès', 'Profil mis à jour');
       setNewPassword('');
@@ -53,14 +79,6 @@ export default function ProfileScreen() {
       Alert.alert('❌ Erreur', error || 'Une erreur est survenue');
     }
   };
-
-  if (loading && !profile) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -73,6 +91,37 @@ export default function ProfileScreen() {
         style={styles.input}
         autoCapitalize="none"
         keyboardType="email-address"
+      />
+
+      <Text style={styles.label}>Prénom</Text>
+      <TextInput value={firstname} onChangeText={setFirstname} style={styles.input} />
+
+      <Text style={styles.label}>Nom</Text>
+      <TextInput value={lastname} onChangeText={setLastname} style={styles.input} />
+
+      <Text style={styles.label}>Pseudo</Text>
+      <TextInput value={nickname} onChangeText={setNickname} style={styles.input} />
+
+      <Text style={styles.label}>Genre</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={gender}
+          onValueChange={(itemValue) => setGender(itemValue)}
+        >
+          <Picker.Item label="Sélectionner..." value="" />
+          <Picker.Item label="Homme" value="male" />
+          <Picker.Item label="Femme" value="female" />
+          <Picker.Item label="Autre" value="other" />
+        </Picker>
+      </View>
+
+
+      <Text style={styles.label}>Âge</Text>
+      <TextInput
+        value={age}
+        onChangeText={setAge}
+        style={styles.input}
+        keyboardType="numeric"
       />
 
       <Text style={styles.label}>Nouveau mot de passe</Text>
@@ -95,35 +144,8 @@ export default function ProfileScreen() {
 
       <PrimaryButton title="Mettre à jour" onPress={handleUpdate} />
 
-      <Text style={[styles.title, { marginTop: 32 }]}>👤 Mes aventuriers</Text>
-
-        {loadingAdventurers ? (
-        <ActivityIndicator size="small" />
-        ) : (
-        adventurers.map((a) => (
-            <AdventurerCard
-            key={a.id}
-            name={a.AdventurerName}
-            ability={a.Ability}
-            endurance={a.Endurance}
-            bookTitle={a.adventure?.book.title}
-            currentPage={a.adventure?.currentPage.pageNumber}
-            onResume={
-                a.adventure
-                ? () => {
-                    setActiveAdventurer(a);
-                    useAdventureStore.setState({
-                        adventureId: a.adventure!.id,
-                        adventurerId: a.id,
-                    });
-                    router.replace(`/page/${a.adventure!.currentPage.id}`);
-                    }
-                : undefined
-            }
-            />
-        ))
-        )}
-
+      <Text style={[styles.title, { marginTop: 32 }]}>🏁 Aventures terminées</Text>
+      <AdventureHistoryList histories={userHistories} />
     </ScrollView>
   );
 }
@@ -148,9 +170,11 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
   },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  pickerContainer: {
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 8,
+  overflow: 'hidden',
+},
+
 });
