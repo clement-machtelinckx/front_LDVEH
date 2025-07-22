@@ -1,4 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { globalStyles } from '@/styles/global';
+
 
 type Props = {
     name: string;
@@ -15,7 +17,7 @@ export default function AdventurerStats({
   currentPage,
 }: Props) {
   return (
-    <View style={styles.stats}>
+    <View style={globalStyles.topCard}>
       <Text style={styles.name}>{name}</Text>
       <Text>⚔️ Habileté : {ability} | ❤️ Endurance : {endurance}</Text>
     </View>
@@ -23,15 +25,6 @@ export default function AdventurerStats({
 }
 
 const styles = StyleSheet.create({
-  stats: {
-    backgroundColor: '#f1f1f1',
-    padding: 16,
-    margin: 16,
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 12,
-    gap: 8,
-  },
   name: { fontSize: 18, fontWeight: 'bold' },
   adventure: { marginTop: 8, fontStyle: 'italic' },
   noAdventure: { color: '#777' },

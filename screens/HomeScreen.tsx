@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import { useAuth } from '@/store/useAuth';
 
+
 const HomeScreen = () => {
   const router = useRouter();
   const { token } = useAuth(); // 🔍 check l'état du user
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
-    backgroundColor: '#fff',
+    backgroundColor: '#eee',
   },
   logo: {
     width: 300,

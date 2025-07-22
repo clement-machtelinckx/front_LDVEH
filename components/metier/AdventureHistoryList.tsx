@@ -1,5 +1,6 @@
 // components/metier/AdventureHistoryList.tsx
 import { View, Text, StyleSheet } from 'react-native';
+import { globalStyles } from '../../styles/global'; // Adjust the import path as necessary
 
 type Props = {
   histories: {
@@ -18,7 +19,7 @@ export default function AdventureHistoryList({ histories, showRanking }: Props) 
   return (
     <View style={styles.list}>
       {histories.map((h, index) => (
-        <View key={index} style={styles.item}>
+        <View key={index} style={globalStyles.container}>
           {showRanking && (
             <Text style={styles.rank}>#{index + 1}</Text>
           )}
