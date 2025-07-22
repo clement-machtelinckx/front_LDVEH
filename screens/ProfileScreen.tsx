@@ -6,15 +6,15 @@ import {
   Alert,
   StyleSheet,
   ScrollView,
-  Picker
 } from 'react-native';
-// import { Picker } from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import { useProfile } from '@/store/useProfile';
 // import { useAdventurerStore } from '@/store/useAdventurerStore';
 import { useAdventureStore } from '@/store/useAdventureStore';
 import { useRouter } from 'expo-router';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import AdventureHistoryList from '@/components/metier/AdventureHistoryList';
+import { globalStyles } from '@/styles/global';
 
 export default function ProfileScreen() {
   const { profile, fetchProfile, updateProfile, loading, error } = useProfile();
@@ -81,28 +81,28 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Mon Profil</Text>
-
-      <Text style={styles.label}>Email</Text>
+    <ScrollView contentContainerStyle={globalStyles.pageContainer}>
+      <Text style={globalStyles.title}>Mon Profil</Text>
+    <View style={styles.formContainer}>
+      <Text style={globalStyles.label}>Email</Text>
       <TextInput
         value={email}
         onChangeText={setEmail}
-        style={styles.input}
+        style={globalStyles.input}
         autoCapitalize="none"
         keyboardType="email-address"
       />
 
-      <Text style={styles.label}>Prénom</Text>
-      <TextInput value={firstname} onChangeText={setFirstname} style={styles.input} />
+      <Text style={globalStyles.label}>Prénom</Text>
+      <TextInput value={firstname} onChangeText={setFirstname} style={globalStyles.input} />
 
-      <Text style={styles.label}>Nom</Text>
-      <TextInput value={lastname} onChangeText={setLastname} style={styles.input} />
+      <Text style={globalStyles.label}>Nom</Text>
+      <TextInput value={lastname} onChangeText={setLastname} style={globalStyles.input} />
 
-      <Text style={styles.label}>Pseudo</Text>
-      <TextInput value={nickname} onChangeText={setNickname} style={styles.input} />
+      <Text style={globalStyles.label}>Pseudo</Text>
+      <TextInput value={nickname} onChangeText={setNickname} style={globalStyles.input} />
 
-      <Text style={styles.label}>Genre</Text>
+      <Text style={globalStyles.label}>Genre</Text>
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={gender}
@@ -116,65 +116,58 @@ export default function ProfileScreen() {
       </View>
 
 
-      <Text style={styles.label}>Âge</Text>
+      <Text style={globalStyles.label}>Âge</Text>
       <TextInput
         value={age}
         onChangeText={setAge}
-        style={styles.input}
+        style={globalStyles.input}
         keyboardType="numeric"
       />
 
-      <Text style={styles.label}>Nouveau mot de passe</Text>
+      <Text style={globalStyles.label}>Nouveau mot de passe</Text>
       <TextInput
         value={newPassword}
         onChangeText={setNewPassword}
-        style={styles.input}
+        style={globalStyles.input}
         secureTextEntry
         placeholder="Laisse vide si inchangé"
       />
 
-      <Text style={styles.label}>Confirmer le mot de passe</Text>
+      <Text style={globalStyles.label}>Confirmer le mot de passe</Text>
       <TextInput
         value={confirmPassword}
         onChangeText={setConfirmPassword}
-        style={styles.input}
+        style={globalStyles.input}
         secureTextEntry
         placeholder="Re-saisir le mot de passe"
       />
 
       <PrimaryButton title="Mettre à jour" onPress={handleUpdate} />
-
-      <Text style={[styles.title, { marginTop: 32 }]}>🏁 Aventures terminées</Text>
+    </View>
+      <Text style={[globalStyles.title, { marginTop: 32 }]}>🏁 Aventures terminées</Text>
       <AdventureHistoryList histories={userHistories} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 24,
+
+  formContainer: {
     backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
     gap: 12,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginVertical: 12,
-  },
-  label: {
-    fontWeight: 'bold',
-  },
-  input: {
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 2,
+},
+  pickerContainer: {
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 12,
     borderRadius: 8,
-  },
-  pickerContainer: {
-  borderWidth: 1,
-  borderColor: '#ccc',
-  borderRadius: 8,
-  overflow: 'hidden',
+    overflow: 'hidden',
 },
 
 });

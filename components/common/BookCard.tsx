@@ -1,5 +1,6 @@
 // components/common/BookCard.tsx
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { globalStyles } from '@/styles/global';
 
 type Props = {
   title: string;
@@ -11,7 +12,7 @@ type Props = {
 
 export default function BookCard({ title, description, pagesCount = 0, author = 'Auteur inconnu', onPress }: Props) {
   return (
-    <Pressable style={styles.card} onPress={onPress}>
+    <Pressable style={globalStyles.card} onPress={onPress}>
       <Text style={styles.bookTitle}>{title}</Text>
       <Text style={styles.bookDesc}>{description}</Text>
 

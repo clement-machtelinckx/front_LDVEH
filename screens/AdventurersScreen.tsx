@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useAdventureStore } from '@/store/useAdventureStore';
 import { useAdventurerStore } from '@/store/useAdventurerStore';
 import AdventurerList from '@/components/metier/AdventurerList';
+import { globalStyles } from '@/styles/global';
 
 export default function AdventurersScreen() {
   const {
@@ -39,8 +40,8 @@ export default function AdventurersScreen() {
 
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tes Aventuriers</Text>
+    <View style={globalStyles.pageContainer}>
+      <Text style={globalStyles.titleCenter}>Tes Aventuriers</Text>
       {loading ? (
         <ActivityIndicator size="large" />
       ) : (
@@ -55,12 +56,3 @@ export default function AdventurersScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24 },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-});

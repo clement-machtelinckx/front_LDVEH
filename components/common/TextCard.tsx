@@ -6,15 +6,15 @@ type Props = {
 
 export default function TextCard({ content }: Props) {
   return (
-    <View style={styles.container}>
+    <View style={styles.card}>
       <Text style={styles.text}>{content}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#f9f9f9',
+  card: {
+    backgroundColor: '#fff',
     borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 8,

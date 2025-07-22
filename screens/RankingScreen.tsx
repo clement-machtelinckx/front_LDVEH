@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useAdventureStore } from '@/store/useAdventureStore';
 import AdventureHistoryList from '@/components/metier/AdventureHistoryList'; 
+import { globalStyles } from '@/styles/global';
 
 export default function RankingScreen() {
   const { histories, fetchHistories } = useAdventureStore();
@@ -11,8 +12,8 @@ export default function RankingScreen() {
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>🏆 Hall of Fame !!</Text>
+    <ScrollView contentContainerStyle={globalStyles.pageContainer}>
+      <Text style={globalStyles.titleCenter}>🏆 Hall of Fame !!</Text>
 
       {histories.length === 0 ? (
         <ActivityIndicator size="large" />
@@ -23,16 +24,3 @@ export default function RankingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 24,
-    gap: 16,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-});

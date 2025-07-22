@@ -9,6 +9,7 @@ import {
 import { useBookStore } from '@/store/useBookStore';
 import { useRouter } from 'expo-router';
 import BookCard from '@/components/common/BookCard';
+import { globalStyles } from '@/styles/global';
 
 const BookScreen = () => {
   const { books, loading, error, fetchBooks } = useBookStore();
@@ -26,8 +27,8 @@ const BookScreen = () => {
   if (error) return <Text style={{ color: 'red' }}>{error}</Text>;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Choisis ton livre</Text>
+    <View style={globalStyles.pageContainer}>
+      <Text style={globalStyles.titleCenter}>Choisis ton livre</Text>
 
       <FlatList
         data={books}
@@ -48,13 +49,7 @@ const BookScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
+
   list: { gap: 16 },
 });
 

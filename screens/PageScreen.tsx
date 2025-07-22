@@ -16,11 +16,7 @@ import TextCard from '@/components/common/TextCard';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import MonsterFightBlock from '@/components/metier/MonsterFightBlock';
 import AdventurerStats from '@/components/common/AdventurerStats';
-
-
-
-
-
+import { globalStyles } from '@/styles/global';
 
 export default function PageScreen() {
   const { pageId } = useLocalSearchParams();
@@ -68,7 +64,8 @@ const { activeAdventurer } = useAdventurerStore();
           bookTitle={currentPage.bookTitle}
           currentPage={currentPage.pageNumber}
         />
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.wrapper}>
+
           <Text style={styles.pageNumber}>Page {currentPage.pageNumber}</Text>
 
           <TextCard content={currentPage.content} />
@@ -140,23 +137,28 @@ const { activeAdventurer } = useAdventurerStore();
 
 const styles = StyleSheet.create({
   container: { padding: 24, gap: 16 },
-  pageNumber: { fontSize: 20, fontWeight: 'bold' },
-content: {
-  fontSize: 16,
-  textAlign: 'center',
-  backgroundColor: '#f9f9f9',
-  borderColor: '#ddd',        
-  borderWidth: 1,
-  borderRadius: 8,
-  padding: 16,
-},
+  pageNumber: { fontSize: 20, fontWeight: 'bold', marginBottom: 16 },
+  content: {
+    fontSize: 16,
+    textAlign: 'center',
+    backgroundColor: '#fff',
+    borderColor: '#ddd',        
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 16,
+  },
+  wrapper: {
+    padding: 24,
+    gap: 16,
+    backgroundColor: '#eee',
+  },
   choices: { 
     gap: 12,
     borderRadius: 8,
     padding: 12,
     borderColor: '#ddd',
     borderWidth: 1,  
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#fff',
   },
   combatBlock: {
     marginTop: 24,
