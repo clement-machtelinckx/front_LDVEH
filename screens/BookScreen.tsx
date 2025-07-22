@@ -27,7 +27,7 @@ const BookScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📚 Choisis ton livre</Text>
+      <Text style={styles.title}>Choisis ton livre</Text>
 
       <FlatList
         data={books}

@@ -31,7 +31,9 @@ type AdventureState = {
   adventureId: number | null;
   adventurerId: number | null;
   currentPage: Page | null;
-  histories: AdventureHistory[];
+
+  histories: AdventureHistory[];       // global ranking
+  userHistories: AdventureHistory[];   // perso
 
   startAdventure: (bookId: number, name: string) => Promise<void>;
   goToPage: (pageId: number, fromPageId?: number) => Promise<void>;
@@ -40,14 +42,18 @@ type AdventureState = {
   deleteAdventure: (adventureId: number) => Promise<boolean>;
 
   fetchHistories: () => Promise<void>;
+  fetchUserHistories: () => Promise<void>;
+
   clearAdventure: () => void;
 };
+
 
 export const useAdventureStore = create<AdventureState>((set) => ({
   adventureId: null,
   adventurerId: null,
   currentPage: null,
   histories: [],
+  userHistories: [],
 
   startAdventure: async (bookId, adventurerName) => {
     const token = useAuth.getState().token;
@@ -144,6 +150,29 @@ export const useAdventureStore = create<AdventureState>((set) => ({
       set({ histories: [] });
     }
   },
+
+  fetchUserHistories: async (userId: number) => {
+    const token = useAuth.getState().token;
+    if (!token || !userId) return;
+
+    try {
+      const res = await fetch(`${API_URL}/adventure_histories?user=/api/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/ld+json',
+        },
+      });
+
+      if (!res.ok) throw new Error('Erreur lors du chargement de l’historique utilisateur');
+
+      const data = await res.json();
+      set({ userHistories: data.member });
+    } catch (e) {
+      console.error(e);
+      set({ userHistories: [] });
+    }
+  },
+
 
   clearAdventure: () => {
     set({

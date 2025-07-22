@@ -1,4 +1,3 @@
-// components/common/AdventurerCard.tsx
 import { View, Text, StyleSheet } from 'react-native';
 import PrimaryButton from './PrimaryButton';
 
@@ -6,9 +5,10 @@ type Props = {
   name: string;
   ability: number;
   endurance: number;
-  bookTitle?: string;
-  currentPage?: number;
+  bookTitle: string;
+  currentPage: number;
   onResume?: () => void;
+  onDelete?: () => void;
 };
 
 export default function AdventurerCard({
@@ -18,22 +18,19 @@ export default function AdventurerCard({
   bookTitle,
   currentPage,
   onResume,
+  onDelete,
 }: Props) {
   return (
     <View style={styles.card}>
       <Text style={styles.name}>{name}</Text>
       <Text>⚔️ Habileté : {ability} | ❤️ Endurance : {endurance}</Text>
 
-      {bookTitle && currentPage ? (
-        <>
-          <Text style={styles.adventure}>
-            📖 {bookTitle} – Page {currentPage}
-          </Text>
-          {onResume && <PrimaryButton title="➡️ Reprendre" onPress={onResume} />}
-        </>
-      ) : (
-        <Text style={styles.noAdventure}>Aucune aventure en cours</Text>
-      )}
+      <Text style={styles.adventure}>
+        📖 {bookTitle} – Page {currentPage}
+      </Text>
+
+      {onResume && <PrimaryButton title="➡️ Reprendre" onPress={onResume} />}
+      {onDelete && <PrimaryButton title="❌ Supprimer" onPress={onDelete} />}
     </View>
   );
 }
@@ -49,5 +46,4 @@ const styles = StyleSheet.create({
   },
   name: { fontSize: 18, fontWeight: 'bold' },
   adventure: { marginTop: 8, fontStyle: 'italic' },
-  noAdventure: { color: '#777' },
 });
