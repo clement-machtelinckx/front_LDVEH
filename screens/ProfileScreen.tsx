@@ -81,7 +81,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={globalStyles.pageContainer}>
+    <ScrollView contentContainerStyle={styles.scrollContent}>
       <Text style={globalStyles.title}>Mon Profil</Text>
     <View style={styles.formContainer}>
       <Text style={globalStyles.label}>Email</Text>
@@ -168,6 +168,12 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     overflow: 'hidden',
+},
+scrollContent: {
+  flexGrow: 1,
+  padding: 24,
+  backgroundColor: '#eee',
+  gap: 24,
 },
 
 });

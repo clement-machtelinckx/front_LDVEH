@@ -19,7 +19,7 @@ export default function AdventureHistoryList({ histories, showRanking }: Props) 
   return (
     <View style={styles.list}>
       {histories.map((h, index) => (
-        <View key={index} style={globalStyles.container}>
+        <View key={index} style={globalStyles.card}>
           {showRanking && (
             <Text style={styles.rank}>#{index + 1}</Text>
           )}
@@ -55,7 +55,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginRight: 8,
     },
-    details: {
-        flex: 1,
-    },
+
 });

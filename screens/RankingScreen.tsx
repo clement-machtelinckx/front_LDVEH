@@ -10,6 +10,7 @@ export default function RankingScreen() {
   useEffect(() => {
     fetchHistories();
   }, []);
+console.log('[RankingScreen] Histories:', histories);
 
   return (
     <ScrollView contentContainerStyle={globalStyles.pageContainer}>
@@ -18,7 +19,7 @@ export default function RankingScreen() {
       {histories.length === 0 ? (
         <ActivityIndicator size="large" />
       ) : (
-        <AdventureHistoryList histories={histories} showRanking />
+        <AdventureHistoryList histories={histories}/>
       )}
     </ScrollView>
   );
