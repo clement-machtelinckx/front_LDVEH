@@ -21,8 +21,8 @@ import { globalStyles } from '@/styles/global';
 export default function PageScreen() {
   const { pageId } = useLocalSearchParams();
   const router = useRouter();
-const { currentPage, goToPage } = useAdventureStore();
-const { activeAdventurer } = useAdventurerStore();
+  const { currentPage, goToPage } = useAdventureStore();
+  const { activeAdventurer } = useAdventurerStore();
   const { setError } = useErrorStore();
 
 
