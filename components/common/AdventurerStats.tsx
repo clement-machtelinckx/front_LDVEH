@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { globalStyles } from '@/styles/global';
-import Dice from '@/components/common/dice';
+import Dice from '@/components/common/Dice';
 
 type Props = {
   name: string;

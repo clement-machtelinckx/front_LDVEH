@@ -10,7 +10,7 @@ type Profile = {
   lastname?: string;
   nickname?: string;
   gender?: 'male' | 'female' | 'other' | null;
-  age?: number | null;
+  dateOfBirth?: Date | null;
 };
 
 type ProfileStore = {
