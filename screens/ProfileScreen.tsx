@@ -25,7 +25,7 @@ export default function ProfileScreen() {
   const [lastname, setLastname] = useState('');
   const [nickname, setNickname] = useState('');
   const [gender, setGender] = useState<'male' | 'female' | 'other' | ''>('');
-  const [age, setAge] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
   const { userHistories, fetchUserHistories } = useAdventureStore();
   const router = useRouter();
   // const { fetchAdventurers } = useAdventurerStore();
@@ -43,9 +43,10 @@ export default function ProfileScreen() {
       setLastname(profile.lastname || '');
       setNickname(profile.nickname || '');
       setGender(profile.gender || '');
-      setAge(profile.age?.toString() || '');
+      setDateOfBirth(profile.dateOfBirth || null);
     }
   }, [profile]);
+
 
   // once profile.id is ready → fetch user histories
   useEffect(() => {
@@ -67,7 +68,7 @@ export default function ProfileScreen() {
       lastname,
       nickname,
       gender: gender || null,
-      age: age ? parseInt(age, 10) : null,
+      dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
       newPassword: newPassword || undefined,
     });
 
@@ -116,11 +117,12 @@ export default function ProfileScreen() {
       </View>
 
 
-      <Text style={globalStyles.label}>Âge</Text>
+      <Text style={globalStyles.label}>Date de naissance</Text>
       <TextInput
-        value={age}
-        onChangeText={setAge}
+        value={dateOfBirth}
+        onChangeText={setDateOfBirth}
         style={globalStyles.input}
+        placeholder="YYYY-MM-DD"
         keyboardType="numeric"
       />
 
