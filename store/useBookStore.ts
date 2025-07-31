@@ -9,7 +9,7 @@ type Book = {
   title: string;
   description: string;
   author?: string;
-  page?: string[]; // ou Page[] si tu veux typé plus finement plus tard
+  page?: string[]; 
 };
 
 type BookStore = {
@@ -28,7 +28,7 @@ export const useBookStore = create<BookStore>((set) => ({
     set({ loading: true, error: null });
   
     try {
-      const token = useAuth.getState().token; // 🔥 accès direct au token Zustand
+      const token = useAuth.getState().token; 
   
       if (!token) throw new Error('Aucun token trouvé');
   

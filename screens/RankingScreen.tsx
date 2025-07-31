@@ -10,7 +10,6 @@ export default function RankingScreen() {
   useEffect(() => {
     fetchHistories();
   }, []);
-console.log('[RankingScreen] Histories:', histories);
 
   return (
     <ScrollView contentContainerStyle={globalStyles.pageContainer}>
