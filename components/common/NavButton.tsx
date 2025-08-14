@@ -1,44 +1,43 @@
 // components/common/NavButton.tsx
-import { Pressable, StyleSheet, Text } from 'react-native';
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 type Props = {
-  icon: string;
+  icon?: string; // emoji legacy
+  iconName?: keyof typeof MaterialCommunityIcons.glyphMap; // MDI
   label: string;
   onPress: () => void;
   danger?: boolean;
   compact?: boolean;
 };
 
-export default function NavButton({ icon, label, onPress, danger = false, compact = false }: Props) {
+export default function NavButton({ icon, iconName, label, onPress, danger, compact }: Props) {
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.button,
-        pressed && styles.pressed,
-      ]}
-      onPress={onPress}
-    >
-      <Text style={[styles.label, danger && styles.danger]}>
-        {icon}
-        {!compact && ` ${label}`}
-      </Text>
-    </Pressable>
+    <TouchableOpacity style={[styles.btn, compact && styles.compact]} onPress={onPress} activeOpacity={0.7}>
+      <View style={styles.inner}>
+        {iconName ? (
+          <MaterialCommunityIcons
+            name={iconName}
+            size={22}
+            color={danger ? '#b42318' : '#111827'}
+            style={{ marginBottom: 4 }}
+          />
+        ) : (
+          <Text style={[styles.emoji, danger && { color: '#b42318' }]}>{icon}</Text>
+        )}
+        <Text style={[styles.label, danger && { color: '#b42318' }]} numberOfLines={1}>
+          {label}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  button: {
-    padding: 10,
-    alignItems: 'center',
-  },
-  label: {
-    fontSize: 14,
-    color: '#333',
-  },
-  danger: {
-    color: '#ff4d4d',
-  },
-  pressed: {
-    opacity: 0.6,
-  },
+  btn: { paddingHorizontal: 8, paddingVertical: 6, alignItems: 'center' },
+  compact: { paddingHorizontal: 4 },
+  inner: { alignItems: 'center', justifyContent: 'center' },
+  emoji: { fontSize: 18, marginBottom: 4 },
+  label: { fontSize: 12, color: '#111827' },
 });
