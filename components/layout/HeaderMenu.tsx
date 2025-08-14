@@ -42,7 +42,7 @@ export default function BottomNavBar() {
         { label: 'Profile', icon: 'account-circle-outline', onPress: () => router.push('/profile') },
         { label: 'About', icon: 'information-outline', onPress: () => router.push('/about') },
         { label: 'Feedback', icon: 'message-draw', onPress: () => router.push('/feedback') },
-        { label: 'Buy me a coffee', icon: 'coffee-outline', onPress: () => router.push('https://buymeacoffee.com/yazii') },
+        { label: 'Buy me a coffee', icon: 'coffee-outline', href: 'https://buymeacoffee.com/yazii' },
         { label: 'Mentions légales', icon: 'scale-balance', onPress: () => router.push('/legal') },
         token
           ? { label: 'Déconnexion', icon: 'logout', destructive: true, onPress: handleLogout }

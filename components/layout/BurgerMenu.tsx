@@ -1,26 +1,19 @@
 // components/common/BurgerMenu.tsx
 import React, { useState } from 'react';
-import { View, Modal, Pressable, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
+import { View, Modal, Pressable, TouchableOpacity, Text, StyleSheet, Platform, Linking } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as WebBrowser from 'expo-web-browser';
 
 type Item = {
   label: string;
   icon?: keyof typeof MaterialCommunityIcons.glyphMap;
-  onPress?: () => void;
+  onPress?: () => void;     // action directe
+  href?: string;            // /route interne OU URL externe (http/https)
   destructive?: boolean;
   trailing?: React.ReactNode;
 };
 
-export default function BurgerMenu({
-  items = [],
-  size = 26,
-  color = '#111',
-  menuWidth = 260,
-  placement = 'bottom-right',   // 'top-right' | 'bottom-right'
-  topOffset = 64,               // utilisé si placement = 'top-right'
-  bottomOffset = 64,            // utilisé si placement = 'bottom-right'
-  rightOffset = 8,
-}: {
+type Props = {
   items?: Item[];
   size?: number;
   color?: string;
@@ -29,14 +22,59 @@ export default function BurgerMenu({
   topOffset?: number;
   bottomOffset?: number;
   rightOffset?: number;
-}) {
+  onNavigate?: (path: string) => void; // ex: (p) => router.push(p)
+};
+
+async function openExternalTab(url: string) {
+  try {
+    await WebBrowser.openBrowserAsync(url, {
+      showTitle: true,
+      enableBarCollapsing: true,
+      dismissButtonStyle: 'close', // iOS
+      // toolbarColor: '#111827',   // Android (optionnel)
+    });
+  } catch {
+    // fallback si Custom Tabs/SafariView indispo
+    await Linking.openURL(url);
+  }
+}
+
+export default function BurgerMenu({
+  items = [],
+  size = 26,
+  color = '#111',
+  menuWidth = 260,
+  placement = 'bottom-right',
+  topOffset = 64,
+  bottomOffset = 64,
+  rightOffset = 8,
+  onNavigate,
+}: Props) {
   const [open, setOpen] = useState(false);
   const toggle = () => setOpen(o => !o);
   const close = () => setOpen(false);
 
-  const handleItemPress = (item: Item) => {
+  const handleItemPress = async (item: Item) => {
     close();
-    item?.onPress?.();
+
+    // 1) action directe si fournie
+    if (item?.onPress) {
+      item.onPress();
+      return;
+    }
+
+    // 2) navigation via href
+    if (item?.href) {
+      const isExternal = /^https?:\/\//i.test(item.href);
+      if (isExternal) {
+        await openExternalTab(item.href);
+      } else if (onNavigate) {
+        onNavigate(item.href);
+      } else {
+        // dernier recours si pas de onNavigate fourni
+        Linking.openURL(item.href).catch(() => {});
+      }
+    }
   };
 
   const positionStyle =
