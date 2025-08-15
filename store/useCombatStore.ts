@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { BASE_URL } from '@/constants/api';
 import { useAdventureStore } from './useAdventureStore';
 import { useAuth } from './useAuth';
+import { useAdventurerStore } from './useAdventurerStore';
 
 type FightResult = {
   adventurer: {
@@ -58,6 +59,10 @@ export const useCombatStore = create<CombatStore>((set) => ({
       const data = await res.json();
 
       const status: CombatStatus = data.winner === 'adventurer' ? 'won' : 'lost';
+
+      const adv = useAdventurerStore.getState();
+      adv.patchActive({ Endurance: data.adventurer.endurance });
+
       set({
         status,
         result: data,

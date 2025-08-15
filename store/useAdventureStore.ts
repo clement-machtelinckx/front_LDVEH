@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { API_URL, BASE_URL } from '@/constants/api';
 import { useAuth } from './useAuth';
+import { useAdventurerStore } from './useAdventurerStore';
 
 type Choice = {
   text: string;
@@ -57,21 +58,24 @@ export const useAdventureStore = create<AdventureState>((set) => ({
 
   startAdventure: async (bookId, adventurerName) => {
     const token = useAuth.getState().token;
+
     const res = await fetch(`${API_URL}/adventure/start`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ bookId, adventurerName }),
     });
 
-    const data = await res.json();
-    set({
-      adventureId: data.adventureId,
-      adventurerId: data.adventurerId,
-    });
+    if (!res.ok) throw new Error(`Erreur start adventure ${res.status}`);
 
+    const data = await res.json(); // { adventureId, adventurerId, pageId }
+
+    // 1) mets à jour l’état local
+    set({ adventureId: data.adventureId, adventurerId: data.adventurerId });
+
+    // 2) synchronise l’aventurier actif (évite l’appel sur “22” au lieu de “23”)
+    await useAdventurerStore.getState().replaceActiveById(data.adventurerId);
+
+    // 3) charge la page de départ (utilise adventurerId du store)
     await useAdventureStore.getState().goToPage(data.pageId);
   },
 
