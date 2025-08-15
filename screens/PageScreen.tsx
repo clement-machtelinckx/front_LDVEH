@@ -30,6 +30,14 @@ export default function PageScreen() {
     reset,
   } = useCombatStore();
 
+
+  useEffect(() => {
+    if (!activeAdventurer && adventureId) {
+      ensureActiveForAdventure(adventureId);
+    }
+  }, [activeAdventurer, adventureId]);
+
+
   // Charger la page
   useEffect(() => {
     if (pageId) goToPage(Number(pageId));
@@ -40,24 +48,12 @@ export default function PageScreen() {
     reset();
   }, [currentPage?.pageId]);
 
-  // Assurer un aventurier actif lié à l’aventure
-  useEffect(() => {
-    if (adventureId) {
-      ensureActiveForAdventure(adventureId);
-    }
-  }, [adventureId]);
 
-  // Rafraîchir au focus (utile quand on revient d’ailleurs)
-  useFocusEffect(
-    useCallback(() => {
-      refreshActiveAdventurer();
-    }, [refreshActiveAdventurer])
-  );
 
   // Après un combat terminé, resynchroniser l’ENDURANCE
   useEffect(() => {
     if (status === 'won' || status === 'lost') {
-      refreshActiveAdventurer();
+      // refreshActiveAdventurer();
     }
   }, [status]);
 
@@ -65,7 +61,7 @@ export default function PageScreen() {
     if (currentPage?.monsterId) {
       fight(currentPage.monsterId);
     }
-    refreshActiveAdventurer()
+    // refreshActiveAdventurer()
   };
 
   if (!currentPage) return <Text>Chargement de la page...</Text>;

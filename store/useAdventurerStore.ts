@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { API_URL } from '@/constants/api';
 import { useAuth } from './useAuth';
 
+
 type Adventure = {
   id: number;
   book: { id: number; title: string };
@@ -32,6 +33,8 @@ type AdventurerStore = {
 
   ensureActiveForAdventure: (adventureId: number) => Promise<void>;
   refreshActiveAdventurer: () => Promise<void>;
+  replaceActiveById: (id: number) => Promise<void>;
+  patchActive: (partial: Partial<Adventurer>) => void;
 };
 
 export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
@@ -61,6 +64,9 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
     }
   },
 
+  replaceActiveById: async (id: number) => {
+    await get().fetchAdventurerById(id); // simple alias pratique
+  },
   // TODO fix le fetch de active adventurer 
   
   // NEW: show by id (/adventurers/{id})
@@ -101,6 +107,13 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
     const fresh = get().adventurers.find(a => a.adventure?.id === adventureId);
     if (fresh) setActiveAdventurer(fresh);
   },
+
+  patchActive: (partial) =>
+    set((s) =>
+      s.activeAdventurer
+        ? { activeAdventurer: { ...s.activeAdventurer, ...partial } }
+        : s
+  ),
 
   
   // NEW: rafraîchit l’aventurier actif depuis l’API (utile après combat)

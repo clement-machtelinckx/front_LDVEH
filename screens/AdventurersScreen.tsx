@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { View, StyleSheet, ActivityIndicator, Alert, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -6,6 +6,8 @@ import { useAdventureStore } from '@/store/useAdventureStore';
 import { useAdventurerStore } from '@/store/useAdventurerStore';
 import AdventurerList from '@/components/metier/AdventurerList';
 import { globalStyles } from '@/styles/global';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 export default function AdventurersScreen() {
   const {
@@ -14,6 +16,14 @@ export default function AdventurersScreen() {
     setActiveAdventurer,
     loading,
   } = useAdventurerStore();
+
+  const clearActiveAdventurer = useAdventurerStore(s => s.clearActiveAdventurer);
+
+  useFocusEffect(
+    useCallback(() => {
+      clearActiveAdventurer();
+    }, [clearActiveAdventurer])
+  );
 
   const router = useRouter();
 

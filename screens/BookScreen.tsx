@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,10 +10,19 @@ import { useBookStore } from '@/store/useBookStore';
 import { useRouter } from 'expo-router';
 import BookCard from '@/components/common/BookCard';
 import { globalStyles } from '@/styles/global';
+import { useFocusEffect } from '@react-navigation/native';
+import { useAdventurerStore } from '@/store/useAdventurerStore';
 
 const BookScreen = () => {
   const { books, loading, error, fetchBooks } = useBookStore();
   const router = useRouter();
+  const clearActiveAdventurer = useAdventurerStore(s => s.clearActiveAdventurer);
+
+  useFocusEffect(
+    useCallback(() => {
+      clearActiveAdventurer(); // purge l’ancien (évite les requêtes sur 22…)
+    }, [clearActiveAdventurer])
+  );
 
   useEffect(() => {
     fetchBooks();
