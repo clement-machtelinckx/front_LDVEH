@@ -1,7 +1,7 @@
 // store/useFeedback.ts
 import { create } from 'zustand';
-import { useAuth } from '@/store/useAuth';
 import { API_URL } from '@/constants/api';
+import { getToken } from '@/services/auth';
 
 type FeedbackState = {
   message: string;
@@ -26,7 +26,7 @@ export const useFeedback = create<FeedbackState>((set, get) => ({
   // overridePayload te permet de changer/compléter la charge utile si besoin plus tard
   submit: async (overridePayload = {}) => {
     const { message } = get();
-    const token = useAuth.getState().token;
+    const token = await getToken();
 
     set({ loading: true, error: undefined, success: false });
     try {

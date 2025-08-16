@@ -17,7 +17,7 @@ const HomeScreen = () => {
         style={styles.logo}
         resizeMode="contain"
       />
-
+      
       {!isLoggedIn && (
         <>
           <PrimaryButton title="Connexion" onPress={() => router.push('/login')} />

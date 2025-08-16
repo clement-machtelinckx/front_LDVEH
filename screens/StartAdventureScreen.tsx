@@ -43,7 +43,7 @@ export default function StartAdventureScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Nom de ton aventurier 🧙</Text>
+      <Text style={styles.title}>Nom de ton aventurier</Text>
 
       <TextInput
         style={styles.input}

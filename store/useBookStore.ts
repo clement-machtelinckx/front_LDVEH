@@ -2,7 +2,6 @@
 import { create } from 'zustand';
 import { API_URL } from '@/constants/api';
 import { getToken } from '@/services/auth';
-import { useAuth } from '@/store/useAuth';
 
 type Book = {
   id: number;
@@ -28,7 +27,7 @@ export const useBookStore = create<BookStore>((set) => ({
     set({ loading: true, error: null });
   
     try {
-      const token = useAuth.getState().token; 
+      const token = await getToken(); 
   
       if (!token) throw new Error('Aucun token trouvé');
   

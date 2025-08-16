@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { API_URL } from '@/constants/api';
-import { useAuth } from './useAuth';
+import { getToken } from '@/services/auth';
 
 
 type Adventure = {
@@ -45,7 +45,7 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
 
   // Liste complète (ton /my-adventurers)
   fetchAdventurers: async () => {
-    const token = useAuth.getState().token;
+    const token = await getToken(); 
     set({ loading: true, error: null });
 
     try {
@@ -71,7 +71,7 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
   
   // NEW: show by id (/adventurers/{id})
   fetchAdventurerById: async (id: number) => {
-    const token = useAuth.getState().token;
+    const token = await getToken();
     set({ loading: true, error: null });
     try {
       const res = await fetch(`${API_URL}/adventurers/${id}`, {
