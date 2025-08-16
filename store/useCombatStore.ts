@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { BASE_URL } from '@/constants/api';
 import { useAdventureStore } from './useAdventureStore';
-import { useAuth } from './useAuth';
 import { useAdventurerStore } from './useAdventurerStore';
+import { getToken } from '@/services/auth';
 
 type FightResult = {
   adventurer: {
@@ -38,7 +38,7 @@ export const useCombatStore = create<CombatStore>((set) => ({
 
   fight: async (monsterId) => {
     const { adventurerId, currentPage } = useAdventureStore.getState();
-    const token = useAuth.getState().token;
+    const token = await getToken();
     if (!adventurerId || !currentPage || !token) return;
 
     set({ status: 'inProgress', result: null });

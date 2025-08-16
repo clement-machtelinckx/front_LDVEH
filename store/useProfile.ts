@@ -1,7 +1,8 @@
 // store/useProfile.ts
 import { create } from 'zustand';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { API_URL } from '@/constants/api';
+import { getToken } from '@/services/auth';
 
 type Profile = {
   id: number;
@@ -29,7 +30,7 @@ export const useProfile = create<ProfileStore>((set) => ({
   fetchProfile: async () => {
     set({ loading: true, error: null });
     try {
-      const token = await AsyncStorage.getItem('token');
+      const token = await getToken();
       const res = await fetch(`${API_URL}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -48,7 +49,7 @@ export const useProfile = create<ProfileStore>((set) => ({
 
   updateProfile: async (payload) => {
     try {
-      const token = await AsyncStorage.getItem('token');
+      const token = await getToken();
       const { newPassword, ...rest } = payload;
       const body = { ...rest };
       if (newPassword) body.newPassword = newPassword;

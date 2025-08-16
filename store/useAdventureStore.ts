@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { API_URL, BASE_URL } from '@/constants/api';
-import { useAuth } from './useAuth';
 import { useAdventurerStore } from './useAdventurerStore';
+import { getToken } from '@/services/auth';
 
 type Choice = {
   text: string;
@@ -57,7 +57,7 @@ export const useAdventureStore = create<AdventureState>((set) => ({
   userHistories: [],
 
   startAdventure: async (bookId, adventurerName) => {
-    const token = useAuth.getState().token;
+    const token = await getToken();
 
     const res = await fetch(`${API_URL}/adventure/start`, {
       method: 'POST',
@@ -81,7 +81,7 @@ export const useAdventureStore = create<AdventureState>((set) => ({
 
   goToPage: async (pageId, fromPageId) => {
     const { adventurerId } = useAdventureStore.getState();
-    const token = useAuth.getState().token;
+    const token = await getToken();
     if (!adventurerId || !token) return;
 
     const url = fromPageId
@@ -100,7 +100,7 @@ export const useAdventureStore = create<AdventureState>((set) => ({
   },
 
   finishAdventure: async (adventureId) => {
-    const token = useAuth.getState().token;
+    const token = await getToken();
     try {
       const res = await fetch(`${API_URL}/adventure/${adventureId}/finish`, {
         method: 'POST',
@@ -118,7 +118,7 @@ export const useAdventureStore = create<AdventureState>((set) => ({
   },
 
   deleteAdventure: async (adventureId) => {
-    const token = useAuth.getState().token;
+    const token = await getToken();
     try {
       const res = await fetch(`${API_URL}/adventure/${adventureId}`, {
         method: 'DELETE',
@@ -136,7 +136,7 @@ export const useAdventureStore = create<AdventureState>((set) => ({
   },
 
   fetchHistories: async () => {
-    const token = useAuth.getState().token;
+    const token = await getToken();
     try {
       const res = await fetch(`${API_URL}/adventure_histories`, {
         headers: {
@@ -156,7 +156,7 @@ export const useAdventureStore = create<AdventureState>((set) => ({
   },
 
   fetchUserHistories: async (userId: number) => {
-    const token = useAuth.getState().token;
+    const token = await getToken();
     if (!token || !userId) return;
 
     try {
