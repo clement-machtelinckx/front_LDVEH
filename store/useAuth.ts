@@ -25,7 +25,7 @@ export const useAuth = create<AuthState>((set, get) => ({
   authReady: false,
 
   init: async () => {
-    const storedAccessToken = await getAccessToken();
+    let storedAccessToken = await getAccessToken();
     const storedRefreshToken = await getRefreshToken();
     
     // Migration: si on trouve l'ancien token, on le migre
@@ -33,14 +33,20 @@ export const useAuth = create<AuthState>((set, get) => ({
     if (oldToken && !storedAccessToken) {
       await saveAccessToken(oldToken);
       await AsyncStorage.removeItem('token');
+      storedAccessToken = oldToken;
     }
-    
-    if (storedAccessToken) {
-      set({ token: storedAccessToken });
+
+    set({
+      token: storedAccessToken ?? null,
+      refreshToken: storedRefreshToken ?? null,
+    });
+
+    // Au redemarrage, si l'access token est absent mais qu'un refresh token existe,
+    // tenter un refresh pour restaurer automatiquement la session.
+    if (!storedAccessToken && storedRefreshToken) {
+      await get().refreshAccessToken();
     }
-    if (storedRefreshToken) {
-      set({ refreshToken: storedRefreshToken });
-    }
+
     set({ authReady: true });
   },
 
