@@ -1,7 +1,6 @@
 import { create } from 'zustand';
-import { BASE_URL } from '@/constants/api';
+import { apiClient } from '@/services/apiClient';
 import { useAdventureStore } from './useAdventureStore';
-import { useAuth } from './useAuth';
 import { useAdventurerStore } from './useAdventurerStore';
 
 type FightResult = {
@@ -38,23 +37,19 @@ export const useCombatStore = create<CombatStore>((set) => ({
 
   fight: async (monsterId) => {
     const { adventurerId, currentPage } = useAdventureStore.getState();
-    const token = useAuth.getState().token;
-    if (!adventurerId || !currentPage || !token) return;
+    if (!adventurerId || !currentPage) return;
 
     set({ status: 'inProgress', result: null });
 
     try {
-      const res = await fetch(`${BASE_URL}/fight`, {
-        method: 'POST',
+      const res = await apiClient.post('/fight', {
+        adventurerId,
+        monsterId,
+      }, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          adventurerId,
-          monsterId,
-        }),
-      });
+      }, true); // useBaseUrl = true car /fight est sur BASE_URL
 
       const data = await res.json();
 
