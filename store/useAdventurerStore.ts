@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import { API_URL, BASE_URL } from '@/constants/api';
-import { useAuth } from './useAuth';
+import { apiClient } from '@/services/apiClient';
 
 
 type Adventure = {
@@ -69,18 +68,10 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
 
   // Liste complète (ton /my-adventurers)
   fetchAdventurers: async () => {
-    const token = useAuth.getState().token;
     set({ loading: true, error: null });
-
     try {
-      const res = await fetch(`${API_URL}/my-adventurers`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      });
+      const res = await apiClient.get('/my-adventurers', { headers: { Accept: 'application/json' } });
       if (!res.ok) throw new Error(`Erreur serveur ${res.status}`);
-
       const data: Adventurer[] = await res.json();
       set({ adventurers: data, loading: false });
     } catch (e: any) {
@@ -95,15 +86,9 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
   
   // NEW: show by id (/adventurers/{id})
   fetchAdventurerById: async (id: number) => {
-    const token = useAuth.getState().token;
     set({ loading: true, error: null });
     try {
-      const res = await fetch(`${API_URL}/adventurers/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/ld+json',
-        },
-      });
+      const res = await apiClient.get(`/adventurers/${id}`, { headers: { Accept: 'application/ld+json' } });
       if (!res.ok) throw new Error(`Erreur serveur ${res.status}`);
 
       const adv: Adventurer = await res.json();
@@ -116,11 +101,10 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
   },
 
   fetchSheet: async (adventurerId: number) => {
-    const token = useAuth.getState().token;
     try {
-      const res = await fetch(`${BASE_URL}/api/adventurer/${adventurerId}/sheet`, {
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-      });
+      const res = await apiClient.get(`/api/adventurer/${adventurerId}/sheet`, {
+        headers: { Accept: 'application/json' },
+      }, true); // useBaseUrl = true
       if (!res.ok) throw new Error(`Erreur sheet: ${res.status}`);
       const data: AdventurerSheet = await res.json();
       set({ sheet: data });

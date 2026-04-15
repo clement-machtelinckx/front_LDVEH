@@ -183,16 +183,11 @@ export const useAdventureStore = create<AdventureState>((set) => ({
 
   rollDice: async () => {
     const { adventurerId } = useAdventureStore.getState();
-    const token = useAuth.getState().token;
-    if (!adventurerId || !token) return null;
+    if (!adventurerId) return null;
 
-    const res = await fetch(`${BASE_URL}/api/adventurer/${adventurerId}/dice-roll`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-    });
+    const res = await apiClient.post(`/api/adventurer/${adventurerId}/dice-roll`, undefined, {
+      headers: { Accept: 'application/json' },
+    }, true); // useBaseUrl = true
 
     if (!res.ok) return null;
 
