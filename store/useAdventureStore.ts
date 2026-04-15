@@ -6,6 +6,16 @@ import { getToken } from '@/services/auth';
 type Choice = {
   text: string;
   nextPage: number;
+  condition?: { type: string; slug: string; quantity?: number };
+  available?: boolean;
+  requiresDiceRoll?: boolean;
+};
+
+type DiceResult = {
+  roll: number;
+  nextPage: number | null;
+  choiceText: string | null;
+  events: any | null;
 };
 
 type Page = {
@@ -17,8 +27,9 @@ type Page = {
   choices: Choice[];
   bookTitle?: string;
   adventurerName?: string;
-  adventurerAbility?: number;
-  adventurerEndurance?: number;
+  adventurerAbility: number;
+  adventurerEndurance: number;
+  adventurerGold: number;
   endingType?: 'death' | 'victory';
 };
 
@@ -32,12 +43,14 @@ type AdventureState = {
   adventureId: number | null;
   adventurerId: number | null;
   currentPage: Page | null;
+  diceResult: DiceResult | null;
 
   histories: AdventureHistory[];       // global ranking
   userHistories: AdventureHistory[];   // perso
 
   startAdventure: (bookId: number, name: string) => Promise<void>;
   goToPage: (pageId: number, fromPageId?: number) => Promise<void>;
+  rollDice: () => Promise<DiceResult | null>;
 
   finishAdventure: (adventureId: number) => Promise<boolean>;
   deleteAdventure: (adventureId: number) => Promise<boolean>;
@@ -46,6 +59,7 @@ type AdventureState = {
   fetchUserHistories: (userId: number) => Promise<void>;
 
   clearAdventure: () => void;
+  clearDiceResult: () => void;
 };
 
 
@@ -53,6 +67,7 @@ export const useAdventureStore = create<AdventureState>((set) => ({
   adventureId: null,
   adventurerId: null,
   currentPage: null,
+  diceResult: null,
   histories: [],
   userHistories: [],
 
@@ -93,6 +108,13 @@ export const useAdventureStore = create<AdventureState>((set) => ({
     }, true); // useBaseUrl = true car /page est sur BASE_URL
 
     const data = await res.json();
+
+    if (!res.ok) {
+      const { useErrorStore } = await import('./useErrorStore');
+      useErrorStore.getState().setError(data.error || 'Erreur inconnue');
+      return;
+    }
+
     set({ currentPage: data });
   },
 
@@ -159,11 +181,34 @@ export const useAdventureStore = create<AdventureState>((set) => ({
   },
 
 
+  rollDice: async () => {
+    const { adventurerId } = useAdventureStore.getState();
+    const token = useAuth.getState().token;
+    if (!adventurerId || !token) return null;
+
+    const res = await fetch(`${BASE_URL}/api/adventurer/${adventurerId}/dice-roll`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    });
+
+    if (!res.ok) return null;
+
+    const data: DiceResult = await res.json();
+    set({ diceResult: data });
+    return data;
+  },
+
+  clearDiceResult: () => set({ diceResult: null }),
+
   clearAdventure: () => {
     set({
       adventureId: null,
       adventurerId: null,
       currentPage: null,
+      diceResult: null,
     });
   },
 }));

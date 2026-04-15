@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { apiClient } from '@/services/apiClient';
+import { API_URL, BASE_URL } from '@/constants/api';
+import { useAuth } from './useAuth';
 
 
 type Adventure = {
@@ -10,11 +11,32 @@ type Adventure = {
   isFinished: boolean;
 };
 
+export type BackpackItem = {
+  name: string;
+  slug: string;
+  type: string;
+  quantity: number;
+  healAmount?: number;
+};
+
+export type AdventurerSheet = {
+  name: string;
+  ability: number;
+  endurance: number;
+  maxEndurance: number;
+  gold: number;
+  weapons: { name: string; slug: string }[];
+  specialObjects: { name: string; slug: string; slot: string | null; enduranceBonus?: number }[];
+  backpack: { items: BackpackItem[]; count: number; max: number };
+  skills: { name: string; slug: string; description?: string }[];
+};
+
 export type Adventurer = {
   id: number;
   AdventurerName: string;
   Ability: number;
   Endurance: number;
+  gold: number;
   adventure: Adventure | null;
 };
 
@@ -23,9 +45,11 @@ type AdventurerStore = {
   loading: boolean;
   error: string | null;
   activeAdventurer: Adventurer | null;
+  sheet: AdventurerSheet | null;
 
   fetchAdventurers: () => Promise<void>;
   fetchAdventurerById: (id: number) => Promise<Adventurer | null>;
+  fetchSheet: (adventurerId: number) => Promise<void>;
 
   setActiveAdventurer: (adventurer: Adventurer) => void;
   clearActiveAdventurer: () => void;
@@ -41,14 +65,17 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
   loading: false,
   error: null,
   activeAdventurer: null,
+  sheet: null,
 
   // Liste complète (ton /my-adventurers)
   fetchAdventurers: async () => {
+    const token = useAuth.getState().token;
     set({ loading: true, error: null });
 
     try {
-      const res = await apiClient.get('/my-adventurers', {
+      const res = await fetch(`${API_URL}/my-adventurers`, {
         headers: {
+          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       });
@@ -68,10 +95,12 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
   
   // NEW: show by id (/adventurers/{id})
   fetchAdventurerById: async (id: number) => {
+    const token = useAuth.getState().token;
     set({ loading: true, error: null });
     try {
-      const res = await apiClient.get(`/adventurers/${id}`, {
+      const res = await fetch(`${API_URL}/adventurers/${id}`, {
         headers: {
+          Authorization: `Bearer ${token}`,
           Accept: 'application/ld+json',
         },
       });
@@ -83,6 +112,20 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
     } catch (e: any) {
       set({ error: e.message || 'Erreur inconnue', loading: false });
       return null;
+    }
+  },
+
+  fetchSheet: async (adventurerId: number) => {
+    const token = useAuth.getState().token;
+    try {
+      const res = await fetch(`${BASE_URL}/api/adventurer/${adventurerId}/sheet`, {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      });
+      if (!res.ok) throw new Error(`Erreur sheet: ${res.status}`);
+      const data: AdventurerSheet = await res.json();
+      set({ sheet: data });
+    } catch (e: any) {
+      set({ error: e.message || 'Erreur inconnue' });
     }
   },
 
