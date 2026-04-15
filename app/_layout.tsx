@@ -37,7 +37,6 @@ export default function RootLayout() {
       <View style={styles.wrapper}>
         {error && <ErrorMessage message={error} />}
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
           <Stack.Screen name="+not-found" />
         </Stack>
 

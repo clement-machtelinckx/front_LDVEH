@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { apiClient } from '@/services/apiClient';
 import { useAdventurerStore } from './useAdventurerStore';
+import { getToken } from '@/services/auth';
 
 type Choice = {
   text: string;

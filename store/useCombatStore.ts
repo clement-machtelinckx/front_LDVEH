@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { apiClient } from '@/services/apiClient';
 import { useAdventureStore } from './useAdventureStore';
 import { useAdventurerStore } from './useAdventurerStore';
+import { getToken } from '@/services/auth';
 
 type FightResult = {
   adventurer: {

@@ -9,7 +9,7 @@ const appBackground = '#eee'; // General app background color
 export const globalStyles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    backgroundColor: appBackground,
+    // backgroundColor: appBackground,
     padding: 24,
     
   },

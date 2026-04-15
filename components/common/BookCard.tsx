@@ -1,5 +1,6 @@
 // components/common/BookCard.tsx
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { globalStyles } from '@/styles/global';
 
 type Props = {
@@ -10,37 +11,51 @@ type Props = {
   onPress: () => void;
 };
 
-export default function BookCard({ title, description, pagesCount = 0, author = 'Auteur inconnu', onPress }: Props) {
+export default function BookCard({
+  title,
+  description,
+  pagesCount = 0,
+  author = 'Auteur inconnu',
+  onPress,
+}: Props) {
   return (
     <Pressable style={globalStyles.card} onPress={onPress}>
       <Text style={styles.bookTitle}>{title}</Text>
       <Text style={styles.bookDesc}>{description}</Text>
 
       <View style={styles.metaInfo}>
-        <Text style={styles.meta}>📄 {pagesCount} pages</Text>
-        <Text style={styles.meta}>✍️ {author}</Text>
+        <View style={styles.metaItem}>
+          <Icon name="file-document-outline" size={16} style={styles.metaIcon} />
+          <Text style={styles.metaText}>{pagesCount} pages</Text>
+        </View>
+
+        <View style={styles.metaItem}>
+          <Icon name="account-edit-outline" size={16} style={styles.metaIcon} />
+          <Text style={styles.metaText}>{author}</Text>
+        </View>
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    padding: 16,
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 12,
-    backgroundColor: '#f3f3f3',
-    elevation: 2,
-  },
   bookTitle: { fontSize: 18, fontWeight: '600' },
   bookDesc: { fontSize: 14, color: '#555', marginTop: 6 },
+
   metaInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 10,
   },
-  meta: {
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  metaIcon: {
+    marginRight: 6,
+    color: '#777',
+  },
+  metaText: {
     fontSize: 12,
     color: '#777',
   },

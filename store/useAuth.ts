@@ -55,7 +55,10 @@ export const useAuth = create<AuthState>((set, get) => ({
     try {
       const res = await fetch(`${API_URL}/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ email, password }),
       });
 
@@ -88,6 +91,8 @@ export const useAuth = create<AuthState>((set, get) => ({
       }
       set({ error: errorMessage, isLoading: false });
       return false;
+    } finally {
+      set({ isLoading: false });
     }
   },
 
@@ -96,7 +101,10 @@ export const useAuth = create<AuthState>((set, get) => ({
     try {
       const res = await fetch(`${API_URL}/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ email, password }),
       });
 
@@ -105,11 +113,12 @@ export const useAuth = create<AuthState>((set, get) => ({
         throw new Error(data.error || 'Erreur d\'inscription'); 
       }
 
-      set({ isLoading: false });
       return true;
     } catch (e: any) {
-      set({ error: e.message, isLoading: false });
+      set({ error: e?.message ?? 'Erreur d’inscription inconnue' });
       return false;
+    } finally {
+      set({ isLoading: false });
     }
   },
 
