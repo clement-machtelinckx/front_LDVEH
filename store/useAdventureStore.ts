@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { API_URL, BASE_URL } from '@/constants/api';
+import { apiClient } from '@/services/apiClient';
 import { useAdventurerStore } from './useAdventurerStore';
 import { getToken } from '@/services/auth';
 
@@ -43,7 +43,7 @@ type AdventureState = {
   deleteAdventure: (adventureId: number) => Promise<boolean>;
 
   fetchHistories: () => Promise<void>;
-  fetchUserHistories: () => Promise<void>;
+  fetchUserHistories: (userId: number) => Promise<void>;
 
   clearAdventure: () => void;
 };
@@ -57,22 +57,21 @@ export const useAdventureStore = create<AdventureState>((set) => ({
   userHistories: [],
 
   startAdventure: async (bookId, adventurerName) => {
-    const token = await getToken();
-
-    const res = await fetch(`${API_URL}/adventure/start`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ bookId, adventurerName }),
+    const res = await apiClient.post('/adventure/start', {
+      bookId,
+      adventurerName,
+    }, {
+      headers: { 'Content-Type': 'application/json' },
     });
 
     if (!res.ok) throw new Error(`Erreur start adventure ${res.status}`);
 
     const data = await res.json(); // { adventureId, adventurerId, pageId }
 
-    // 1) mets à jour l’état local
+    // 1) mets à jour l'état local
     set({ adventureId: data.adventureId, adventurerId: data.adventurerId });
 
-    // 2) synchronise l’aventurier actif (évite l’appel sur “22” au lieu de “23”)
+    // 2) synchronise l'aventurier actif (évite l'appel sur "22" au lieu de "23")
     await useAdventurerStore.getState().replaceActiveById(data.adventurerId);
 
     // 3) charge la page de départ (utilise adventurerId du store)
@@ -81,35 +80,27 @@ export const useAdventureStore = create<AdventureState>((set) => ({
 
   goToPage: async (pageId, fromPageId) => {
     const { adventurerId } = useAdventureStore.getState();
-    const token = await getToken();
-    if (!adventurerId || !token) return;
+    if (!adventurerId) return;
 
-    const url = fromPageId
-      ? `${BASE_URL}/page/${pageId}/adventurer/${adventurerId}/from/${fromPageId}`
-      : `${BASE_URL}/page/${pageId}/adventurer/${adventurerId}`;
+    const endpoint = fromPageId
+      ? `/page/${pageId}/adventurer/${adventurerId}/from/${fromPageId}`
+      : `/page/${pageId}/adventurer/${adventurerId}`;
 
-    const res = await fetch(url, {
+    const res = await apiClient.get(endpoint, {
       headers: {
-        Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
-    });
+    }, true); // useBaseUrl = true car /page est sur BASE_URL
 
     const data = await res.json();
     set({ currentPage: data });
   },
 
   finishAdventure: async (adventureId) => {
-    const token = await getToken();
     try {
-      const res = await fetch(`${API_URL}/adventure/${adventureId}/finish`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await apiClient.post(`/adventure/${adventureId}/finish`);
 
-      if (!res.ok) throw new Error('Erreur lors de la fin de l’aventure');
+      if (!res.ok) throw new Error("Erreur lors de la fin de l'aventure");
       return true;
     } catch (e) {
       console.error(e);
@@ -118,16 +109,10 @@ export const useAdventureStore = create<AdventureState>((set) => ({
   },
 
   deleteAdventure: async (adventureId) => {
-    const token = await getToken();
     try {
-      const res = await fetch(`${API_URL}/adventure/${adventureId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await apiClient.delete(`/adventure/${adventureId}`);
 
-      if (!res.ok) throw new Error('Erreur lors de la suppression de l’aventure');
+      if (!res.ok) throw new Error("Erreur lors de la suppression de l'aventure");
       return true;
     } catch (e) {
       console.error(e);
@@ -136,11 +121,9 @@ export const useAdventureStore = create<AdventureState>((set) => ({
   },
 
   fetchHistories: async () => {
-    const token = await getToken();
     try {
-      const res = await fetch(`${API_URL}/adventure_histories`, {
+      const res = await apiClient.get('/adventure_histories', {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/ld+json',
         },
       });
@@ -156,18 +139,16 @@ export const useAdventureStore = create<AdventureState>((set) => ({
   },
 
   fetchUserHistories: async (userId: number) => {
-    const token = await getToken();
-    if (!token || !userId) return;
+    if (!userId) return;
 
     try {
-      const res = await fetch(`${API_URL}/adventure_histories?user=/api/users/${userId}`, {
+      const res = await apiClient.get(`/adventure_histories?user=/api/users/${userId}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/ld+json',
         },
       });
 
-      if (!res.ok) throw new Error('Erreur lors du chargement de l’historique utilisateur');
+      if (!res.ok) throw new Error("Erreur lors du chargement de l'historique utilisateur");
 
       const data = await res.json();
       set({ userHistories: data.member });

@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import { API_URL } from '@/constants/api';
-import { getToken } from '@/services/auth';
+import { apiClient } from '@/services/apiClient';
 
 
 type Adventure = {
@@ -45,13 +44,11 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
 
   // Liste complète (ton /my-adventurers)
   fetchAdventurers: async () => {
-    const token = await getToken(); 
     set({ loading: true, error: null });
 
     try {
-      const res = await fetch(`${API_URL}/my-adventurers`, {
+      const res = await apiClient.get('/my-adventurers', {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       });
@@ -71,12 +68,10 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
   
   // NEW: show by id (/adventurers/{id})
   fetchAdventurerById: async (id: number) => {
-    const token = await getToken();
     set({ loading: true, error: null });
     try {
-      const res = await fetch(`${API_URL}/adventurers/${id}`, {
+      const res = await apiClient.get(`/adventurers/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/ld+json',
         },
       });

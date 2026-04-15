@@ -1,8 +1,6 @@
 // store/useProfile.ts
 import { create } from 'zustand';
-
-import { API_URL } from '@/constants/api';
-import { getToken } from '@/services/auth';
+import { apiClient } from '@/services/apiClient';
 
 type Profile = {
   id: number;
@@ -30,10 +28,8 @@ export const useProfile = create<ProfileStore>((set) => ({
   fetchProfile: async () => {
     set({ loading: true, error: null });
     try {
-      const token = await getToken();
-      const res = await fetch(`${API_URL}/profile`, {
+      const res = await apiClient.get('/profile', {
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       });
@@ -49,18 +45,14 @@ export const useProfile = create<ProfileStore>((set) => ({
 
   updateProfile: async (payload) => {
     try {
-      const token = await getToken();
       const { newPassword, ...rest } = payload;
       const body = { ...rest };
       if (newPassword) body.newPassword = newPassword;
 
-      const res = await fetch(`${API_URL}/profile`, {
-        method: 'PUT',
+      const res = await apiClient.put('/profile', body, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(body),
       });
 
       if (!res.ok) {

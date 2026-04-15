@@ -1,7 +1,6 @@
 // store/useFeedback.ts
 import { create } from 'zustand';
-import { API_URL } from '@/constants/api';
-import { getToken } from '@/services/auth';
+import { apiClient } from '@/services/apiClient';
 
 type FeedbackState = {
   message: string;
@@ -26,18 +25,13 @@ export const useFeedback = create<FeedbackState>((set, get) => ({
   // overridePayload te permet de changer/compléter la charge utile si besoin plus tard
   submit: async (overridePayload = {}) => {
     const { message } = get();
-    const token = await getToken();
 
     set({ loading: true, error: undefined, success: false });
     try {
-      const res = await fetch(`${API_URL}/feedback`, {
-        method: 'POST',
+      const res = await apiClient.post('/feedback', { message, ...overridePayload }, {
         headers: {
           'Content-Type': 'application/ld+json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        // Par défaut on envoie { message } ; tu peux ajouter d'autres champs via overridePayload
-        body: JSON.stringify({ message, ...overridePayload }),
       });
 
       if (!res.ok) {
