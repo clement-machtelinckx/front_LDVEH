@@ -5,9 +5,18 @@ type Props = {
 };
 
 export default function TextCard({ content }: Props) {
+  // Remplace les \n simples  par un espace,
+  // et les \n\n par de vrais sauts de paragraphe
+  const paragraphs = content
+    .split(/\n{2,}/)
+    .map(p => p.replace(/\n/g, ' ').trim())
+    .filter(p => p.length > 0);
+
   return (
     <View style={styles.card}>
-      <Text style={styles.text}>{content}</Text>
+      {paragraphs.map((p, i) => (
+        <Text key={i} style={[styles.text, i > 0 && styles.paragraph]}>{p}</Text>
+      ))}
     </View>
   );
 }
@@ -22,6 +31,10 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    textAlign: 'center',
+    lineHeight: 24,
+    textAlign: 'justify',
+  },
+  paragraph: {
+    marginTop: 12,
   },
 });

@@ -1,5 +1,5 @@
 // PageScreen.tsx
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -18,7 +18,7 @@ export default function PageScreen() {
   const { pageId } = useLocalSearchParams();
   const router = useRouter();
 
-  const { currentPage, goToPage, adventureId } = useAdventureStore();
+  const { currentPage, goToPage, adventureId, adventurerId, rollDice, diceResult, clearDiceResult } = useAdventureStore();
   const { activeAdventurer, ensureActiveForAdventure, refreshActiveAdventurer } = useAdventurerStore();
   const { setError } = useErrorStore();
 
@@ -57,6 +57,26 @@ export default function PageScreen() {
     }
   }, [status]);
 
+  const [isRolling, setIsRolling] = useState(false);
+
+  // Reset dice result quand on change de page
+  useEffect(() => {
+    clearDiceResult();
+  }, [currentPage?.pageId]);
+
+  const handleRollDice = async () => {
+    setIsRolling(true);
+    const result = await rollDice();
+    setIsRolling(false);
+
+    if (result?.nextPage) {
+      // Delai pour laisser le joueur voir le resultat
+      setTimeout(() => {
+        goToPage(result.nextPage!, currentPage?.pageId);
+      }, 2000);
+    }
+  };
+
   const handleStartFight = () => {
     if (currentPage?.monsterId) {
       fight(currentPage.monsterId);
@@ -70,10 +90,15 @@ export default function PageScreen() {
     <>
       <AdventurerStats
         name={activeAdventurer?.AdventurerName || 'Inconnu'}
-        ability={activeAdventurer?.Ability ?? 0}
-        endurance={activeAdventurer?.Endurance ?? 0}
+        ability={currentPage.adventurerAbility}
+        endurance={currentPage.adventurerEndurance}
+        gold={currentPage.adventurerGold}
+        adventurerId={adventurerId}
         bookTitle={currentPage.bookTitle}
         currentPage={currentPage.pageNumber}
+        onRollDice={handleRollDice}
+        diceValue={diceResult?.roll ?? null}
+        isRolling={isRolling}
       />
 
       <ScrollView contentContainerStyle={styles.wrapper}>
@@ -122,11 +147,16 @@ export default function PageScreen() {
               }}
             />
           ) : (
-            currentPage.choices.map((choice, index) => (
+            (currentPage.choices ?? []).filter(c => !c.requiresDiceRoll).map((choice, index) => (
               <PrimaryButton
                 key={index}
                 title={choice.text}
+                disabled={choice.available === false}
                 onPress={() => {
+                  if (choice.available === false) {
+                    setError('Vous ne remplissez pas les conditions pour ce choix.');
+                    return;
+                  }
                   if (currentPage.isBlocking && status !== 'won') {
                     setError("Tu dois d'abord vaincre le monstre pour continuer !");
                     return;
