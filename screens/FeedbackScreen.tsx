@@ -15,7 +15,7 @@ export default function FeedbackScreen() {
 
   useEffect(() => {
     if (success) {
-      Alert.alert('Merci 🙏', 'Ton feedback a bien été envoyé.', [
+      Alert.alert('Merci ', 'Ton feedback a bien été envoyé.', [
         { text: 'OK', onPress: () => router.back() },
       ]);
       // Optionnel: reset state après succès
@@ -46,8 +46,7 @@ export default function FeedbackScreen() {
       <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}>
         <Text style={styles.title}>Feedback</Text>
         <Text style={styles.subtitle}>
-          Une idée, un bug, une suggestion ? Dis-m’en plus ci-dessous 👇
-        </Text>
+          Une idée, un bug, une suggestion ? Dis-m’en plus ci-dessous         </Text>
 
         <View style={styles.card}>
           <Text style={styles.label}>Message</Text>
@@ -63,7 +62,7 @@ export default function FeedbackScreen() {
           />
           <Text style={styles.counter}>{message.length} / 2000</Text>
 
-          {error ? <Text style={styles.error}>⚠️ {error}</Text> : null}
+          {error ? <Text style={styles.error}>{error}</Text> : null}
 
           <TouchableOpacity
             style={[styles.btn, { opacity: loading || message.trim().length === 0 ? 0.6 : 1 }]}

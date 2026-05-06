@@ -11,6 +11,7 @@ import { useErrorStore } from '@/store/useErrorStore';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import ErrorMessage from '@/components/common/ErrorMessage';
 import { View, StyleSheet } from 'react-native';
+import { colors } from '@/styles/theme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -51,5 +52,6 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     paddingBottom: 60,
+    backgroundColor: colors.parchmentDark,
   },
 });

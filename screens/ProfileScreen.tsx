@@ -58,7 +58,7 @@ export default function ProfileScreen() {
 
   const handleUpdate = async () => {
     if (newPassword && newPassword !== confirmPassword) {
-      Alert.alert('❌ Erreur', 'Les mots de passe ne correspondent pas');
+      Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
       return;
     }
 
@@ -73,11 +73,11 @@ export default function ProfileScreen() {
     });
 
     if (success) {
-      Alert.alert('✅ Succès', 'Profil mis à jour');
+      Alert.alert('Succès', 'Profil mis à jour');
       setNewPassword('');
       setConfirmPassword('');
     } else {
-      Alert.alert('❌ Erreur', error || 'Une erreur est survenue');
+      Alert.alert('Erreur', error || 'Une erreur est survenue');
     }
   };
 
@@ -146,7 +146,7 @@ export default function ProfileScreen() {
 
       <PrimaryButton title="Mettre à jour" onPress={handleUpdate} />
     </View>
-      <Text style={[globalStyles.title, { marginTop: 32 }]}>🏁 Aventures terminées</Text>
+      <Text style={[globalStyles.title, { marginTop: 32 }]}>Aventures terminées</Text>
       <AdventureHistoryList histories={userHistories} />
     </ScrollView>
   );

@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import PrimaryButton from '@/components/common/PrimaryButton';
+import { colors, fonts, fontSize, spacing, radius } from '@/styles/theme';
 
 type Props = {
   monsterName: string;
@@ -22,17 +23,21 @@ export default function MonsterFightBlock({
 }: Props) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
-        ⚔️ Monstre : {monsterName} ({isBlocking ? 'bloquant' : 'non bloquant'})
-      </Text>
+      <View style={styles.header}>
+        <Text style={styles.label}>Rencontre hostile</Text>
+        <View style={styles.rule} />
+        <Text style={styles.name}>{monsterName}</Text>
+        <Text style={styles.modifier}>{isBlocking ? 'Combat obligatoire' : 'Combat évitable'}</Text>
+      </View>
 
-      {status === 'idle' && <PrimaryButton title="Combattre ce monstre" onPress={onFight} />}
-      {status === 'inProgress' && <ActivityIndicator size="large" />}
+      {status === 'idle' && <PrimaryButton title="Engager le combat" variant="danger" onPress={onFight} />}
+      {status === 'inProgress' && <ActivityIndicator size="large" color={colors.danger} />}
+
       {status !== 'idle' && result && currentFoughtPageId === pageId && (
         <View style={styles.resultBox}>
           <Text style={styles.resultText}>{result}</Text>
-          {status === 'won' && <Text style={{ color: 'green' }}>✅ Victoire ! Tu peux avancer.</Text>}
-          {status === 'lost' && <Text style={{ color: 'red' }}>💀 Défaite... (retour au début à implémenter)</Text>}
+          {status === 'won' && <Text style={styles.victory}>Victoire — la voie est libre.</Text>}
+          {status === 'lost' && <Text style={styles.defeat}>Défaite — votre aventure s’arrête ici.</Text>}
         </View>
       )}
     </View>
@@ -41,28 +46,71 @@ export default function MonsterFightBlock({
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 24,
-    marginBottom: 16,
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: '#fef5f5',
-    borderColor: '#ff9999',
+    backgroundColor: colors.parchment,
+    borderColor: colors.danger,
     borderWidth: 1,
+    borderRadius: radius.sm,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
+  header: {
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  label: {
+    fontFamily: fonts.body,
+    fontSize: fontSize.xs,
+    color: colors.danger,
+    textTransform: 'uppercase',
+    letterSpacing: 3,
+  },
+  rule: {
+    width: '40%',
+    height: 1,
+    backgroundColor: colors.danger,
+    marginVertical: spacing.xs,
+  },
+  name: {
+    fontFamily: fonts.heading,
+    fontSize: fontSize.xl,
+    fontWeight: '700',
+    color: colors.ink,
+    letterSpacing: 1,
+  },
+  modifier: {
+    fontFamily: fonts.body,
+    fontSize: fontSize.sm,
+    color: colors.inkSoft,
+    fontStyle: 'italic',
   },
   resultBox: {
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: '#eee',
-    borderRadius: 8,
+    padding: spacing.md,
+    backgroundColor: colors.parchmentDark,
+    borderTopWidth: 1,
+    borderTopColor: colors.parchmentDeep,
+    borderRadius: radius.sm,
+    gap: spacing.sm,
   },
   resultText: {
-    fontFamily: 'monospace',
-    fontSize: 14,
-    color: '#333',
+    fontFamily: fonts.body,
+    fontSize: fontSize.sm,
+    color: colors.ink,
+    lineHeight: 20,
+  },
+  victory: {
+    fontFamily: fonts.heading,
+    fontSize: fontSize.base,
+    fontWeight: '700',
+    color: colors.success,
+    textAlign: 'center',
+    letterSpacing: 1,
+  },
+  defeat: {
+    fontFamily: fonts.heading,
+    fontSize: fontSize.base,
+    fontWeight: '700',
+    color: colors.danger,
+    textAlign: 'center',
+    letterSpacing: 1,
   },
 });

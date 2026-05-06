@@ -1,5 +1,6 @@
 import { View, ActivityIndicator, StyleSheet, Text, FlatList } from 'react-native';
 import AdventurerCard from '@/components/common/AdventurerCard';
+import { colors, fonts, fontSize, spacing } from '@/styles/theme';
 
 type Adventurer = {
   id: number;
@@ -24,7 +25,7 @@ type Props = {
 export default function AdventurerList({ adventurers, loading, onResume, onDelete }: Props) {
   if (loading) return <ActivityIndicator size="large" />;
 
-  if (!adventurers.length) return <Text>Aucun aventurier trouvé.</Text>;
+  if (!adventurers.length) return <Text style={styles.empty}>Aucune aventure en cours.</Text>;
 
   return (
  <FlatList
@@ -43,13 +44,22 @@ export default function AdventurerList({ adventurers, loading, onResume, onDelet
       />
     )}
     contentContainerStyle={styles.list}
-    ListEmptyComponent={<Text>Aucun aventurier trouvé.</Text>}
+    ListEmptyComponent={<Text style={styles.empty}>Aucune aventure en cours.</Text>}
   />
   );
 }
 
 const styles = StyleSheet.create({
   list: {
-    gap: 16,
+    gap: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  empty: {
+    fontFamily: fonts.body,
+    fontSize: fontSize.sm,
+    color: colors.inkMuted,
+    fontStyle: 'italic',
+    textAlign: 'center',
+    paddingVertical: spacing.xl,
   },
 });

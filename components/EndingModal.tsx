@@ -19,14 +19,14 @@ export default function EndingModal({ visible, type }: Props) {
       <View style={styles.overlay}>
         <View style={styles.box}>
           <Text style={[styles.title, { color: isVictory ? 'green' : 'red' }]}>
-            {isVictory ? '🎉 Bravo !' : '💀 Vous êtes mort'}
+            {isVictory ? 'Bravo !' : 'Vous êtes mort'}
           </Text>
           <Text style={styles.message}>
             {isVictory
               ? 'Félicitations, vous avez terminé cette aventure avec succès !'
               : 'Votre mission s’achève ici... mais vous pouvez toujours retenter votre chance !'}
           </Text>
-          <Button title="📚 Retour aux livres" onPress={() => router.replace('/book')} />
+          <Button title="Retour aux livres" onPress={() => router.replace('/book')} />
         </View>
       </View>
     </Modal>

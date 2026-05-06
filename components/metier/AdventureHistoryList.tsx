@@ -24,9 +24,9 @@ export default function AdventureHistoryList({ histories, showRanking }: Props) 
             <Text style={styles.rank}>#{index + 1}</Text>
           )}
           <View style={styles.details}>
-            <Text style={styles.title}>📖 {h.bookTitle}</Text>
-            <Text>👤 {h.adventurerName}</Text>
-            <Text style={styles.date}>🏁 {new Date(h.finishAt).toLocaleDateString()}</Text>
+            <Text style={styles.title}>{h.bookTitle}</Text>
+            <Text>{h.adventurerName}</Text>
+            <Text style={styles.date}>{new Date(h.finishAt).toLocaleDateString()}</Text>
           </View>
         </View>
       ))}
