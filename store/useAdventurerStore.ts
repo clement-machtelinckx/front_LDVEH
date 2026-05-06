@@ -49,6 +49,10 @@ type AdventurerStore = {
   fetchAdventurers: () => Promise<void>;
   fetchAdventurerById: (id: number) => Promise<Adventurer | null>;
   fetchSheet: (adventurerId: number) => Promise<void>;
+  consumeItem: (adventurerId: number, slug: string) => Promise<void>;
+  dropItem: (adventurerId: number, slug: string) => Promise<void>;
+  takeItem: (adventurerId: number, slug: string) => Promise<void>;
+  takeGold: (adventurerId: number, amount: number) => Promise<void>;
 
   setActiveAdventurer: (adventurer: Adventurer) => void;
   clearActiveAdventurer: () => void;
@@ -128,6 +132,51 @@ export const useAdventurerStore = create<AdventurerStore>((set, get) => ({
     }
     const fresh = get().adventurers.find(a => a.adventure?.id === adventureId);
     if (fresh) setActiveAdventurer(fresh);
+  },
+
+  consumeItem: async (adventurerId, slug) => {
+    try {
+      const res = await apiClient.post(`/api/adventurer/${adventurerId}/consume/${slug}`, undefined, {}, true);
+      if (!res.ok) throw new Error(`Erreur consume: ${res.status}`);
+      await get().fetchSheet(adventurerId);
+    } catch (e: any) {
+      set({ error: e.message });
+    }
+  },
+
+  dropItem: async (adventurerId, slug) => {
+    try {
+      const res = await apiClient.post(`/api/adventurer/${adventurerId}/drop/${slug}`, undefined, {}, true);
+      if (!res.ok) throw new Error(`Erreur drop: ${res.status}`);
+      await get().fetchSheet(adventurerId);
+    } catch (e: any) {
+      set({ error: e.message });
+    }
+  },
+
+  takeItem: async (adventurerId, slug) => {
+    try {
+      const res = await apiClient.post(`/api/adventurer/${adventurerId}/take/${slug}`, undefined, {}, true);
+      if (!res.ok) throw new Error(`Erreur take: ${res.status}`);
+      await get().fetchSheet(adventurerId);
+    } catch (e: any) {
+      set({ error: e.message });
+    }
+  },
+
+  takeGold: async (adventurerId, amount) => {
+    try {
+      const res = await apiClient.post(
+        `/api/adventurer/${adventurerId}/gold`,
+        { amount },
+        { headers: { 'Content-Type': 'application/json' } },
+        true,
+      );
+      if (!res.ok) throw new Error(`Erreur gold: ${res.status}`);
+      await get().fetchSheet(adventurerId);
+    } catch (e: any) {
+      set({ error: e.message });
+    }
   },
 
   patchActive: (partial) =>

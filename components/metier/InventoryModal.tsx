@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { Modal, View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Modal, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useAdventurerStore } from '@/store/useAdventurerStore';
 import InventorySheet from './InventorySheet';
+import { colors, fonts, fontSize, spacing, radius } from '@/styles/theme';
 
 type Props = {
   visible: boolean;
@@ -10,31 +11,43 @@ type Props = {
 };
 
 export default function InventoryModal({ visible, adventurerId, onClose }: Props) {
-  const { sheet, fetchSheet } = useAdventurerStore();
+  const { sheet, fetchSheet, consumeItem, dropItem } = useAdventurerStore();
 
   useEffect(() => {
-    if (visible && adventurerId) fetchSheet(adventurerId);
+    if (visible && adventurerId) {
+      fetchSheet(adventurerId);
+    }
   }, [visible, adventurerId]);
 
+  const handleConsume = async (slug: string) => {
+    if (!adventurerId) return;
+    await consumeItem(adventurerId, slug);
+  };
+
+  const handleDrop = async (slug: string) => {
+    if (!adventurerId) return;
+    await dropItem(adventurerId, slug);
+  };
+
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View style={styles.box}>
-
-          <View style={styles.header}>
-            <View style={styles.titleRow}>
-              <Image source={require('@/assets/images/backpack.png')} style={styles.titleIcon} />
-              <Text style={styles.title}>Sac à dos</Text>
-            </View>
-            <TouchableOpacity onPress={onClose}>
-              <Text style={styles.close}>✕</Text>
+        <View style={styles.sheet}>
+          <View style={styles.innerBorder}>
+            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+              <Text style={styles.closeText}>✕</Text>
             </TouchableOpacity>
+
+            {!sheet ? (
+              <ActivityIndicator size="large" color={colors.goldDeep} style={{ marginTop: 64 }} />
+            ) : (
+              <InventorySheet
+                sheet={sheet}
+                onConsume={handleConsume}
+                onDrop={handleDrop}
+              />
+            )}
           </View>
-
-          {!sheet
-            ? <ActivityIndicator size="large" style={{ marginTop: 32 }} />
-            : <InventorySheet sheet={sheet} />}
-
         </View>
       </View>
     </Modal>
@@ -44,24 +57,41 @@ export default function InventoryModal({ visible, adventurerId, onClose }: Props
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: '#00000088',
-    justifyContent: 'flex-end',
-  },
-  box: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    maxHeight: '80%',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    backgroundColor: 'rgba(26, 20, 16, 0.85)',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    padding: spacing.lg,
   },
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  titleIcon: { width: 24, height: 24, resizeMode: 'contain' },
-  title: { fontSize: 18, fontWeight: 'bold' },
-  close: { fontSize: 20, color: '#888', paddingHorizontal: 8 },
+  sheet: {
+    width: '100%',
+    maxWidth: 560,
+    height: '92%',
+    backgroundColor: colors.parchment,
+    borderWidth: 2,
+    borderColor: colors.ink,
+    borderRadius: radius.sm,
+    padding: spacing.xs,
+  },
+  innerBorder: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: colors.goldDeep,
+    borderRadius: radius.sm,
+    padding: spacing.lg,
+  },
+  closeBtn: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  closeText: {
+    fontFamily: fonts.body,
+    fontSize: fontSize.lg,
+    color: colors.inkSoft,
+  },
 });

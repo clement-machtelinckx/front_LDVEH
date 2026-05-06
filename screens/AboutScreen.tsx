@@ -40,7 +40,7 @@ export default function AboutScreen() {
 
         <Text style={styles.sectionTitle}>Le dev</Text>
         <Text style={styles.p}>
-          Hey, moi c’est Yazii 👋 — projet passion LDVEH. Une idée, un bug, une envie de contribuer ?
+          Hey, moi c’est Yazii — projet passion LDVEH. Une idée, un bug, une envie de contribuer ?
           Passe par Feedback ou contacte-moi !
         </Text>
 

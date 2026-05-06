@@ -7,7 +7,7 @@ import { useAuth } from '@/store/useAuth';
 
 const HomeScreen = () => {
   const router = useRouter();
-  const { token } = useAuth(); // 🔍 check l'état du user
+  const { token } = useAuth(); // check l'état du user
   const isLoggedIn = !!token;
 
   return (

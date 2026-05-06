@@ -18,13 +18,22 @@ type DiceResult = {
   events: any | null;
 };
 
+export type AvailableItem = {
+  slug: string;
+  name: string;
+  type: string;
+  quantity: number;
+};
+
 type Page = {
   pageId: number;
   pageNumber: number;
   content: string;
   monsterId: number | null;
   monster: any | null;
+  isBlocking?: boolean;
   choices: Choice[];
+  itemsAvailable: AvailableItem[];
   bookTitle?: string;
   adventurerName?: string;
   adventurerAbility: number;

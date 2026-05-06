@@ -12,7 +12,7 @@ export default function ErrorMessage({ message }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>❌ {message}</Text>
+      <Text style={styles.text}>{message}</Text>
       <TouchableOpacity onPress={clearError}>
         <Text style={styles.close}>✖</Text>
       </TouchableOpacity>
