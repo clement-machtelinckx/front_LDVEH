@@ -6,6 +6,7 @@ type Adventurer = {
   AdventurerName: string;
   Ability: number;
   Endurance: number;
+  gold: number;
   adventure?: {
     id: number;
     book: { title: string };
@@ -34,6 +35,7 @@ export default function AdventurerList({ adventurers, loading, onResume, onDelet
         name={item.AdventurerName}
         ability={item.Ability}
         endurance={item.Endurance}
+        gold={item.gold ?? 0}
         bookTitle={item.adventure?.book?.title}
         currentPage={item.adventure?.currentPage?.pageNumber}
         onResume={() => onResume?.(item)}

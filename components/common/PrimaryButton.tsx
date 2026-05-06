@@ -1,50 +1,27 @@
 // components/common/PrimaryButton.tsx
-import React from 'react';
-import { Pressable, Text, StyleSheet, ViewStyle } from 'react-native';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { StyleSheet, View, Button, ViewStyle } from 'react-native';
 
 type Props = {
   title: string;
   onPress: () => void;
-  disabled?: boolean;
   style?: ViewStyle;
-  iconLeft?: React.ComponentProps<typeof Icon>['name'];   // ⬅️ NEW
-  iconRight?: React.ComponentProps<typeof Icon>['name'];  // ⬅️ NEW
+  disabled?: boolean;
 };
 
-export default function PrimaryButton({
-  title,
-  onPress,
-  disabled,
-  style,
-  iconLeft,
-  iconRight,
-}: Props) {
+export default function PrimaryButton({ title, onPress, style, disabled }: Props) {
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      style={[styles.btn, disabled && styles.btnDisabled, style]}
-    >
-      {iconLeft ? <Icon name={iconLeft} size={18} style={styles.iconLeft} /> : null}
-      <Text style={styles.text}>{title}</Text>
-      {iconRight ? <Icon name={iconRight} size={18} style={styles.iconRight} /> : null}
-    </Pressable>
+    <View style={[styles.wrapper, disabled && styles.disabled, style]}>
+      <Button title={title} onPress={onPress} disabled={disabled} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  btn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    backgroundColor: '#212837',
+  wrapper: {
+    marginVertical: 8,
+    width: '100%',
   },
-  btnDisabled: { opacity: 0.6 },
-  text: { color: 'white', fontWeight: '600', fontSize: 16 },
-  iconLeft: { marginRight: 8, color: 'white' },
-  iconRight: { marginLeft: 8, color: 'white' },
+  disabled: {
+    opacity: 0.5,
+  },
 });

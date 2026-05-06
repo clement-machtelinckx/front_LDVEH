@@ -1,27 +1,24 @@
-// components/Dice.tsx (ou où il est situé)
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import PrimaryButton from '@/components/common/PrimaryButton';
 
-export default function Dice() {
-  const [value, setValue] = useState<number | null>(null);
+type Props = {
+  onRoll: () => void;
+  value: number | null;
+  isRolling?: boolean;
+};
 
-  // Si tu veux un D6 classique, mets const sides = 6;
-  const sides = 10;
-
-  const rollDice = () => {
-    const random = Math.floor(Math.random() * sides) + 1;
-    setValue(random);
-  };
-
+export default function Dice({ onRoll, value, isRolling }: Props) {
   return (
     <View style={styles.container}>
       <PrimaryButton
-        title="Lancer le dé"
-        iconLeft="dice-multiple-outline" 
-        onPress={rollDice}
+        title={isRolling ? '...' : '🎲 Lancer le dé'}
+        onPress={onRoll}
+        disabled={isRolling}
       />
-      {value !== null && <Text style={styles.result}>Résultat : {value}</Text>}
+      {value !== null && (
+        <Text style={styles.result}>{value}</Text>
+      )}
     </View>
   );
 }
@@ -29,13 +26,11 @@ export default function Dice() {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginVertical: 20,
-    gap: 12,
+    gap: 4,
   },
   result: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 10,
     color: '#222',
   },
 });
